@@ -2,506 +2,216 @@ import streamlit as st
 import re
 import time
 import joblib
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
+import docx2txt
+from pypdf import PdfReader
 
-try:
-    import docx2txt
-    DOCX_AVAILABLE = True
-except ImportError:
-    DOCX_AVAILABLE = False
-
-try:
-    from pypdf import PdfReader
-    PDF_AVAILABLE = True
-except ImportError:
-    PDF_AVAILABLE = False
-
-# ── 1. Page Config ─────────────────────────────────────────────────────────────
+# ── 1. إعدادات الصفحة الفخمة ──────────────────────────────────────────────────
 st.set_page_config(
-    page_title="NewsAI | Advanced Classifier",
-    page_icon="🤖",
+    page_title="NewsIQ | AI Intelligence Hub",
+    page_icon="🧠",
     layout="wide",
-    initial_sidebar_state="expanded",
 )
 
-# ── 2. Custom CSS (Dark Tech / Glassmorphism) ──────────────────────────────────
+# ── 2. دالة خلفية الفيديو (إضافة الروح للموقع) ──────────────────────────────────
+def add_bg_video():
+    video_url = "https://assets.mixkit.co/videos/preview/mixkit-digital-particles-in-blue-background-9121-large.mp4"
+    st.markdown(f"""
+        <style>
+        [data-testid="stAppViewContainer"] {{ background: none; }}
+        #myVideo {{
+            position: fixed; right: 0; bottom: 0;
+            min-width: 100%; min-height: 100%;
+            z-index: -1; filter: brightness(0.4);
+        }}
+        </style>
+        <video autoplay loop muted playsinline id="myVideo">
+            <source src="{video_url}" type="video/mp4">
+        </video>
+    """, unsafe_allow_html=True)
+
+# ── 3. Custom CSS (دمج الهوية البصرية مع الـ Glassmorphism) ─────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;600&display=swap');
+    
+    html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; color: #e8e6f0; }
 
-/* ── Global Reset ── */
-html, body, [class*="css"] {
-    font-family: 'Exo 2', sans-serif;
-    color: #e0eaff;
-}
+    /* الهيدر اللوجو */
+    .nav-logo { font-family: 'DM Serif Display', serif; font-size: 2.5rem; color: #fff; text-align: center; margin-bottom: 10px; }
+    .nav-logo span { color: #00f5ff; }
 
-/* ── Animated Background ── */
-[data-testid="stAppViewContainer"] {
-    background: radial-gradient(ellipse at 20% 50%, #0d1b4b 0%, #050c1f 40%, #000510 100%);
-    min-height: 100vh;
-}
+    /* كروت النتائج الزجاجية */
+    .card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 20px;
+    }
 
-/* ── Animated floating dots ── */
-[data-testid="stAppViewContainer"]::before {
-    content: '';
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-image:
-        radial-gradient(2px 2px at 10% 20%, rgba(0,200,255,0.4) 0%, transparent 100%),
-        radial-gradient(2px 2px at 80% 10%, rgba(100,100,255,0.3) 0%, transparent 100%),
-        radial-gradient(1px 1px at 50% 80%, rgba(0,200,255,0.2) 0%, transparent 100%),
-        radial-gradient(2px 2px at 90% 60%, rgba(150,0,255,0.3) 0%, transparent 100%),
-        radial-gradient(1px 1px at 30% 90%, rgba(0,150,255,0.3) 0%, transparent 100%);
-    pointer-events: none;
-    z-index: 0;
-}
+    /* ألوان التصنيفات */
+    .result-category { font-family: 'DM Serif Display', serif; font-size: 3rem; margin-bottom: 10px; }
+    .cat-world { color: #60b0ff; text-shadow: 0 0 15px #60b0ff66; }
+    .cat-sports { color: #4ecf8a; text-shadow: 0 0 15px #4ecf8a66; }
+    .cat-biz { color: #f5a623; text-shadow: 0 0 15px #f5a62366; }
+    .cat-tech { color: #e060f0; text-shadow: 0 0 15px #e060f066; }
 
-/* ── Sidebar ── */
-[data-testid="stSidebar"] {
-    background: rgba(5, 15, 50, 0.85) !important;
-    border-right: 1px solid rgba(0, 200, 255, 0.2) !important;
-    backdrop-filter: blur(20px);
-}
-[data-testid="stSidebar"] * { color: #c8d8ff !important; }
-[data-testid="stSidebar"] .stSelectbox label { color: #8899cc !important; font-size: 0.85rem !important; }
+    /* زر التحليل المضيء */
+    .stButton button {
+        background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 15px !important;
+        padding: 15px !important;
+        font-weight: 800 !important;
+        font-size: 1.2rem !important;
+        box-shadow: 0 10px 20px rgba(0, 210, 255, 0.3) !important;
+        transition: 0.3s;
+    }
+    .stButton button:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(0, 210, 255, 0.5) !important; }
 
-/* ── Header ── */
-.main-header {
-    text-align: center;
-    padding: 30px 20px 10px;
-    position: relative;
-}
-.main-title {
-    font-family: 'Orbitron', monospace;
-    font-size: 2.8rem;
-    font-weight: 900;
-    background: linear-gradient(135deg, #00d4ff 0%, #7b6fff 50%, #ff6fff 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: 2px;
-    margin-bottom: 8px;
-    text-shadow: none;
-}
-.main-subtitle {
-    color: #6a80b0;
-    font-size: 1rem;
-    font-weight: 300;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-}
-
-/* ── Glowing Divider ── */
-.glow-divider {
-    height: 2px;
-    background: linear-gradient(90deg, transparent, #00d4ff, #7b6fff, transparent);
-    margin: 15px auto;
-    max-width: 600px;
-    border-radius: 2px;
-}
-
-/* ── Cards ── */
-.glass-card {
-    background: rgba(10, 25, 80, 0.6);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(0, 200, 255, 0.15);
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 16px;
-    box-shadow: 0 8px 32px rgba(0, 100, 200, 0.1), inset 0 1px 0 rgba(255,255,255,0.05);
-}
-
-/* ── Text Area ── */
-.stTextArea textarea {
-    background: rgba(5, 15, 50, 0.8) !important;
-    border: 1px solid rgba(0, 200, 255, 0.2) !important;
-    border-radius: 12px !important;
-    color: #c8d8ff !important;
-    font-family: 'Exo 2', sans-serif !important;
-    font-size: 0.95rem !important;
-    resize: vertical;
-}
-.stTextArea textarea:focus {
-    border-color: rgba(0, 200, 255, 0.6) !important;
-    box-shadow: 0 0 20px rgba(0, 200, 255, 0.1) !important;
-}
-.stTextArea textarea::placeholder { color: #445577 !important; }
-
-/* ── File Uploader ── */
-[data-testid="stFileUploader"] {
-    background: rgba(5, 15, 50, 0.5) !important;
-    border: 2px dashed rgba(0, 200, 255, 0.25) !important;
-    border-radius: 12px !important;
-    padding: 10px !important;
-}
-
-/* ── Radio Buttons ── */
-.stRadio > div {
-    display: flex;
-    gap: 10px;
-    flex-direction: row !important;
-}
-.stRadio label {
-    background: rgba(10, 25, 80, 0.7) !important;
-    border: 1px solid rgba(0, 200, 255, 0.2) !important;
-    border-radius: 30px !important;
-    padding: 6px 20px !important;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-size: 0.9rem !important;
-}
-
-/* ── Selectbox ── */
-.stSelectbox > div > div {
-    background: rgba(5, 15, 50, 0.8) !important;
-    border: 1px solid rgba(0, 200, 255, 0.2) !important;
-    border-radius: 10px !important;
-    color: #c8d8ff !important;
-}
-
-/* ── Main Button ── */
-.stButton > button {
-    background: linear-gradient(135deg, #0062ff 0%, #00c8ff 100%) !important;
-    color: white !important;
-    border: none !important;
-    border-radius: 40px !important;
-    padding: 14px 30px !important;
-    font-family: 'Orbitron', monospace !important;
-    font-weight: 700 !important;
-    font-size: 1rem !important;
-    letter-spacing: 2px !important;
-    text-transform: uppercase !important;
-    box-shadow: 0 0 30px rgba(0, 150, 255, 0.4), 0 4px 15px rgba(0, 100, 200, 0.3) !important;
-    transition: all 0.3s !important;
-    width: 100% !important;
-}
-.stButton > button:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 0 50px rgba(0, 200, 255, 0.6) !important;
-}
-
-/* ── Result Card ── */
-.result-card {
-    background: rgba(5, 20, 70, 0.8);
-    border: 1px solid rgba(0, 200, 255, 0.3);
-    border-left: 4px solid #00d4ff;
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 20px;
-    box-shadow: 0 0 30px rgba(0, 200, 255, 0.1);
-}
-.result-label {
-    font-size: 0.75rem;
-    color: #445577;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    margin-bottom: 8px;
-}
-.result-category {
-    font-family: 'Orbitron', monospace;
-    font-size: 2.2rem;
-    font-weight: 700;
-    margin-bottom: 12px;
-}
-.cat-world    { color: #60b0ff; text-shadow: 0 0 20px rgba(96,176,255,0.5); }
-.cat-sports   { color: #4ecf8a; text-shadow: 0 0 20px rgba(78,207,138,0.5); }
-.cat-business { color: #f5a623; text-shadow: 0 0 20px rgba(245,166,35,0.5); }
-.cat-tech     { color: #e060f0; text-shadow: 0 0 20px rgba(224,96,240,0.5); }
-
-.confidence-badge {
-    display: inline-block;
-    background: rgba(0, 200, 255, 0.15);
-    border: 1px solid rgba(0, 200, 255, 0.3);
-    border-radius: 20px;
-    padding: 4px 16px;
-    color: #00d4ff;
-    font-weight: 700;
-    font-size: 0.95rem;
-}
-
-/* ── Sidebar Stats Card ── */
-.stat-card {
-    background: rgba(0, 200, 255, 0.05);
-    border: 1px solid rgba(0, 200, 255, 0.1);
-    border-radius: 12px;
-    padding: 14px;
-    margin-top: 10px;
-}
-.stat-label { font-size: 0.75rem; color: #445577; text-transform: uppercase; letter-spacing: 2px; }
-.stat-value { font-size: 1rem; font-weight: 600; color: #4ecf8a; margin-top: 4px; }
-
-/* ── Footer ── */
-.footer {
-    text-align: center;
-    padding: 30px;
-    border-top: 1px solid rgba(0, 200, 255, 0.1);
-    margin-top: 40px;
-    color: #445577;
-    font-size: 0.9rem;
-    line-height: 1.8;
-}
-.footer b { color: #00d4ff; }
-
-/* ── Section Headings ── */
-h3 { font-family: 'Exo 2', sans-serif !important; font-weight: 600 !important; color: #8899cc !important; font-size: 0.9rem !important; text-transform: uppercase !important; letter-spacing: 2px !important; }
-
-/* ── Spinner ── */
-.stSpinner > div { border-top-color: #00d4ff !important; }
-
-/* ── Success / Error ── */
-.stAlert { border-radius: 10px !important; background: rgba(5, 50, 20, 0.6) !important; border: 1px solid rgba(0, 200, 100, 0.3) !important; }
-
-/* ── Hide streamlit branding ── */
-#MainMenu { visibility: hidden; }
-footer { visibility: hidden; }
-header { visibility: hidden; }
+    /* الفوتر */
+    .footer { text-align: center; padding: 40px; background: rgba(0,0,0,0.4); border-top: 1px solid rgba(255,255,255,0.05); margin-top: 50px; }
 </style>
 """, unsafe_allow_html=True)
 
-
-# ── 3. Load Models ─────────────────────────────────────────────────────────────
+# ── 4. الدوال البرمجية (NLP) ──────────────────────────────────────────────────
 @st.cache_resource
-import os
-st.write("Files in directory:", os.listdir("."))
 def load_assets():
     try:
-        tfidf  = joblib.load("tfidf_vectorizer.joblib")
-        le     = joblib.load("label_encoder.joblib")
+        tfidf = joblib.load("tfidf_vectorizer.joblib")
+        le = joblib.load("label_encoder.joblib")
         models = {
-            "Linear SVC":           joblib.load("linear_svc_model.joblib"),
-            "Logistic Regression":  joblib.load("logistic_regression_model.joblib"),
-            "Naive Bayes":          joblib.load("naive_bayes_model.joblib"),
+            "Linear SVC": joblib.load("linear_svc_model.joblib"),
+            "Logistic Regression": joblib.load("logistic_regression_model.joblib"),
+            "Naive Bayes": joblib.load("naive_bayes_model.joblib")
         }
         return tfidf, le, models
-    except Exception:
+    except:
         return None, None, None
 
-def clean_text(text: str) -> str:
+def clean_text(text):
     text = text.lower()
     text = re.sub(r'[^a-z\s]', '', text)
     return text.strip()
 
-MODEL_INFO = {
-    "Linear SVC":          {"desc": "Best for Accuracy 🎯",  "color": "#00d4ff"},
-    "Logistic Regression": {"desc": "Balanced Speed 🔄",     "color": "#7b6fff"},
-    "Naive Bayes":         {"desc": "Fastest Model ⚡",       "color": "#4ecf8a"},
-}
-
-CAT_CLASS = {
-    "World":    "cat-world",
-    "Sports":   "cat-sports",
-    "Business": "cat-business",
-    "Sci/Tech": "cat-tech",
-}
-
-BAR_COLORS = {
-    "World":    "#60b0ff",
-    "Sports":   "#4ecf8a",
-    "Business": "#f5a623",
-    "Sci/Tech": "#e060f0",
-}
-
-# ── 4. Main App ─────────────────────────────────────────────────────────────────
+# ── 5. بناء الواجهة الرئيسية ─────────────────────────────────────────────────
 def main():
+    add_bg_video()
     tfidf, le, models = load_assets()
 
-    # ── Sidebar ──────────────────────────────────────────────────────────────────
-    with st.sidebar:
-        st.markdown("""
-        <div style='text-align:center; padding: 10px 0 20px;'>
-            <div style='font-size:1.8rem; margin-bottom:6px;'>⚙️</div>
-            <div style='font-family:Orbitron,monospace; font-size:1.2rem; font-weight:700;
-                        background:linear-gradient(135deg,#00d4ff,#7b6fff);
-                        -webkit-background-clip:text; -webkit-text-fill-color:transparent;'>
-                Settings
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+    st.markdown('<div class="nav-logo">News<span>IQ</span></div>', unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; color:#94a3b8; font-size:1.2rem;'>Advanced Neural News Classification Hub</p>", unsafe_allow_html=True)
 
-        st.markdown("**Choose AI Model**")
-        model_options = list(MODEL_INFO.keys()) if models else ["Assets Missing"]
-        selected_model = st.selectbox("Choose Model", model_options, label_visibility="collapsed")
-
-        if models and selected_model in MODEL_INFO:
-            info = MODEL_INFO[selected_model]
-            st.markdown(f"""
-            <div class="stat-card">
-                <div class="stat-label">Model Stats</div>
-                <div class="stat-value">{info['desc']}</div>
-            </div>
-            """, unsafe_allow_html=True)
-
-        st.markdown("<br>", unsafe_allow_html=True)
-
-        # Category legend
-        st.markdown("<div style='font-size:0.75rem; color:#445577; text-transform:uppercase; letter-spacing:2px; margin-bottom:10px;'>Categories</div>", unsafe_allow_html=True)
-        for cat, col in BAR_COLORS.items():
-            st.markdown(f"<div style='color:{col}; font-size:0.9rem; margin:4px 0;'>● {cat}</div>", unsafe_allow_html=True)
-
-    # ── Header ───────────────────────────────────────────────────────────────────
-    st.markdown("""
-    <div class="main-header">
-        <div class="main-title">NewsAI | Advanced Classifier 🤖</div>
-        <div class="glow-divider"></div>
-        <div class="main-subtitle">Enterprise NLP System for News Classification</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # ── Content Columns ───────────────────────────────────────────────────────────
+    # تقسيم الصفحة
     left_col, right_col = st.columns([3, 2], gap="large")
 
-    # ────── LEFT : Input ──────────────────────────────────────────────────────────
     with left_col:
-        input_mode = st.radio(
-            "Input Method",
-            ["✏️ Type/Paste Text", "📁 Upload Document"],
-            horizontal=True,
-            label_visibility="collapsed",
-        )
-
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        input_method = st.tabs(["✍️ Paste Text", "📁 Upload Document"])
+        
         input_text = ""
-
-        if input_mode == "✏️ Type/Paste Text":
-            input_text = st.text_area(
-                "Article",
-                placeholder="Paste news article content here...",
-                height=220,
-                label_visibility="collapsed",
-            )
-        else:
-            accept = ['pdf', 'docx', 'txt']
-            file = st.file_uploader("Upload Document", type=accept, label_visibility="collapsed")
+        with input_method[0]:
+            input_text = st.text_area("Article Content", placeholder="Enter the news story here...", height=250, label_visibility="collapsed")
+        
+        with input_method[1]:
+            file = st.file_uploader("Upload PDF/DOCX/TXT", type=['pdf', 'docx', 'txt'])
             if file:
-                try:
-                    if file.type == "application/pdf" and PDF_AVAILABLE:
-                        reader = PdfReader(file)
-                        input_text = " ".join(
-                            p.extract_text() for p in reader.pages if p.extract_text()
-                        )
-                    elif file.type == "text/plain":
-                        input_text = file.read().decode("utf-8")
-                    elif DOCX_AVAILABLE:
-                        input_text = docx2txt.process(file)
-                    else:
-                        input_text = file.read().decode("utf-8", errors="ignore")
-                    st.success("✅ Document loaded successfully!")
-                except Exception as e:
-                    st.error(f"Error reading file: {e}")
+                if file.type == "application/pdf":
+                    reader = PdfReader(file)
+                    input_text = " ".join([page.extract_text() for page in reader.pages if page.extract_text()])
+                elif file.type == "text/plain":
+                    input_text = file.read().decode("utf-8")
+                else:
+                    input_text = docx2txt.process(file)
+                st.success("File context loaded successfully!")
 
-        st.markdown("<br>", unsafe_allow_html=True)
-        analyze_btn = st.button("🤖  RUN AI ANALYSIS", use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        selected_model = st.selectbox("Intelligence Model Core", list(models.keys()) if models else ["Assets Missing"])
+        analyze_btn = st.button("⚡ START NEURAL ANALYSIS", use_container_width=True)
 
-    # ────── RIGHT : Results ───────────────────────────────────────────────────────
     with right_col:
-        if analyze_btn and input_text.strip():
+        if analyze_btn and input_text:
             if tfidf and models:
-                with st.spinner("Analyzing neural patterns..."):
-                    time.sleep(0.6)
-                    cleaned   = clean_text(input_text)
-                    vec       = tfidf.transform([cleaned])
-                    model     = models[selected_model]
-                    pred_idx  = model.predict(vec)[0]
-                    category  = le.inverse_transform([pred_idx])[0]
+                with st.spinner("Decoding language patterns..."):
+                    time.sleep(0.8) # لمحاكاة سرعة التحليل
+                    cleaned = clean_text(input_text)
+                    vec = tfidf.transform([cleaned])
+                    
+                    model = models[selected_model]
+                    pred_idx = model.predict(vec)[0]
+                    category = le.inverse_transform([pred_idx])[0]
 
+                    # حساب الثقة (Confidence)
                     if hasattr(model, "predict_proba"):
                         probs = model.predict_proba(vec)[0]
                     else:
-                        d = model.decision_function(vec)[0]
-                        exp_d = np.exp(d - np.max(d))
-                        probs = exp_d / exp_d.sum()
-
+                        d_func = model.decision_function(vec)[0]
+                        exp_scores = np.exp(d_func - np.max(d_func))
+                        probs = exp_scores / exp_scores.sum()
+                    
                     conf_scores = {c: p for c, p in zip(le.classes_, probs)}
-                    color_class = CAT_CLASS.get(category, "")
-                    confidence  = conf_scores[category] * 100
 
-                    # Result card
+                    # تحديد لون التصنيف بناءً على كودك
+                    color_class = {"World": "cat-world", "Sports": "cat-sports", "Business": "cat-biz", "Sci/Tech": "cat-tech"}.get(category, "")
+
+                    # عرض كارت النتيجة الفخم
                     st.markdown(f"""
-                    <div class="result-card">
-                        <div class="result-label">Classification Result</div>
+                    <div class="card" style="border-left: 5px solid #00f5ff;">
+                        <p style="font-size:0.8rem; color:#8884a0; text-transform:uppercase; letter-spacing:2px;">Classification Result</p>
                         <div class="result-category {color_class}">{category}</div>
-                        <div class="confidence-badge">Confidence: {confidence:.1f}%</div>
-                        <p style="margin-top:14px; color:#6a80b0; font-size:0.85rem; line-height:1.6;">
-                            The model classified this article as <strong style="color:#c8d8ff;">{category}</strong> news
-                            with <strong style="color:#00d4ff;">{confidence:.1f}%</strong> confidence
-                            using {selected_model}.
-                        </p>
+                        <div style="background:rgba(0,245,255,0.1); padding:10px; border-radius:10px; display:inline-block;">
+                            <span style="color:#00f5ff; font-weight:bold; font-size:1.2rem;">Confidence: {conf_scores[category]*100:.2f}%</span>
+                        </div>
                     </div>
                     """, unsafe_allow_html=True)
 
-                    # Probability chart
-                    st.markdown("### Probability Distribution")
-                    cats   = list(conf_scores.keys())
-                    vals   = list(conf_scores.values())
-                    colors = [BAR_COLORS.get(c, "#8899cc") for c in cats]
+                    # رسم بياني احترافي (Dark Theme)
+                    st.write("### Probability Distribution")
+                    fig, ax = plt.subplots(figsize=(6, 4))
+                    fig.patch.set_alpha(0)
+                    ax.patch.set_alpha(0)
+                    
+                    cats = list(conf_scores.keys())
+                    vals = list(conf_scores.values())
+                    colors = ['#f5a623', '#e060f0', '#4ecf8a', '#60b0ff']
 
-                    fig, ax = plt.subplots(figsize=(5, 3))
-                    fig.patch.set_facecolor("none")
-                    ax.set_facecolor("#050c1f")
+                    bars = ax.barh(cats, vals, color=colors, edgecolor='white', linewidth=0.5)
+                    ax.set_xlim(0, 1)
+                    ax.tick_params(axis='both', colors='#cbd5e1', labelsize=12)
+                    for spine in ax.spines.values(): spine.set_visible(False)
+                    
+                    # إضافة النسب المئوية على البارات
+                    for bar in bars:
+                        width = bar.get_width()
+                        ax.text(width + 0.02, bar.get_y() + bar.get_height()/2, f'{width*100:.1f}%', 
+                                va='center', color='white', fontweight='bold')
 
-                    bars = ax.barh(cats, vals, color=colors, height=0.55,
-                                   edgecolor="none")
-
-                    # Glow effect using wider, transparent bars behind
-                    for bar, col in zip(bars, colors):
-                        ax.barh(bar.get_y() + bar.get_height() / 2,
-                                bar.get_width(), height=0.7,
-                                color=col, alpha=0.15, left=0)
-
-                    ax.set_xlim(0, 1.18)
-                    ax.tick_params(axis='both', colors='#6a80b0', labelsize=10)
-                    ax.xaxis.set_visible(False)
-                    for spine in ax.spines.values():
-                        spine.set_visible(False)
-
-                    for bar, col in zip(bars, colors):
-                        w = bar.get_width()
-                        ax.text(w + 0.03, bar.get_y() + bar.get_height() / 2,
-                                f"{w*100:.1f}%",
-                                va='center', color=col,
-                                fontweight='bold', fontsize=10)
-
-                    ax.set_yticks(range(len(cats)))
-                    ax.set_yticklabels(cats, color='#8899cc', fontsize=11)
-
-                    plt.tight_layout(pad=0.5)
-                    st.pyplot(fig, use_container_width=True)
-
-            elif not tfidf:
-                st.error("⚠️ Model assets not found. Please ensure .joblib files are in the app directory.")
-
-        elif analyze_btn and not input_text.strip():
-            st.warning("⚠️ Please enter or upload some article text first.")
-
+                    st.pyplot(fig)
+            else:
+                st.error("Assets Error: Please check model files.")
         else:
             st.markdown("""
-            <div style="
-                text-align:center;
-                padding: 60px 20px;
-                border: 2px dashed rgba(0,200,255,0.15);
-                border-radius: 16px;
-                color: #2a3a60;
-            ">
-                <div style="font-size:3.5rem; margin-bottom:12px;">🧠</div>
-                <div style="font-size:0.9rem; letter-spacing:2px; text-transform:uppercase;">
-                    Awaiting article input...
-                </div>
+            <div class="card" style="text-align:center; opacity:0.3; padding:100px 20px; border-style: dashed;">
+                <h1 style="font-size:4rem; margin:0;">🧠</h1>
+                <p>Awaiting article input for analysis...</p>
             </div>
             """, unsafe_allow_html=True)
 
-    # ── Footer ───────────────────────────────────────────────────────────────────
-    st.markdown("<br><hr style='border-color:rgba(0,200,255,0.1);'>", unsafe_allow_html=True)
+    # Footer المطور
+    st.markdown("<br><hr>", unsafe_allow_html=True)
     st.markdown("""
-    <div class="footer">
-        Developed with ❤️ by <b>Section 1 Team</b><br>
-        <span>Aya Ahmed | Toka Nasr | Toka Alaa | Hemmat Hamdi | Nourhan Medhat</span><br>
-        <span style="font-size:0.8rem; color:#2a3a60;">© 2026 Academic Deployment Project</span>
-    </div>
+        <div style='text-align: center; color: #94a3b8; font-family: sans-serif; font-size: 18px;'>
+            Developed with ❤️ by <b style='color: #00f5ff;'></b><br>
+            <span style='font-size: 18px;'>Toka Nasr | Aya Ahmed | Toka Alaa | Hemmat Hamdi | Nourhan Medhat</span><br>
+            © 2026 Academic Project
+        </div>
     """, unsafe_allow_html=True)
-
 
 if __name__ == "__main__":
     main()
