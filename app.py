@@ -320,7 +320,7 @@ def main():
 
         st.markdown("**Choose AI Model**")
         model_options = list(MODEL_INFO.keys()) if models else ["Assets Missing"]
-        selected_model = st.selectbox("", model_options, label_visibility="collapsed")
+        selected_model = st.selectbox("Choose Model", model_options, label_visibility="collapsed")
 
         if models and selected_model in MODEL_INFO:
             info = MODEL_INFO[selected_model]
