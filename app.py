@@ -8,150 +8,126 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # ==============================================================================
-# 1. THE GLOW ENGINE & IDENTITY (Fixed AttributeError)
+# 1. SOFT NEON IDENTITY (Eye-Comfort Edition)
 # ==============================================================================
-class NeonTheme:
+class SoftTheme:
     NAME = "NewsIQ Intelligence"
-    TAGLINE = "DECODING NEURAL SIGNALS"  # هذا هو السطر الذي كان ينقص الكود
-    VERSION = "v4.0.0 — Ultimate Glow Edition"
+    TAGLINE = "DECODING NEURAL SIGNALS"
+    VERSION = "v4.2.0 — Soft Vision"
     
-    # فريق العمل
+    # أسماء الفريق
     TEAM = ["آية احمد", "تقي نصر", "تقي علاء", "همت حمدي", "نورهان مدحت"]
     
-    # ألوان النيون (Ultra-Bright)
-    PURPLE_GLOW = "#bc13fe"
-    CYAN_GLOW = "#00f2ff"
-    HOT_PINK = "#ff0055"
-    DEEP_DARK = "#010101"
+    # بالتة الألوان الهادئة (Muted Palette)
+    MAIN_SOFT = "#94a3b8"      # أزرق ضبابي هادئ للـ Subtitles
+    ACCENT_GLOW = "#818cf8"    # بنفسجي لافندر ناعم (مريح للعين)
+    BG_DEEP = "#0f172a"        # أزرق ليلي غامق جداً (أفضل من الأسود الصريح)
+    TEXT_SILVER = "#e2e8f0"    # فضي فاتح للنصوص
 
 # ==============================================================================
-# 2. CYBER-PUNK GLOW CSS (HIGH-END VISUALS)
+# 2. REFINED SOFT-GLOW CSS (SYMMETRIC BOXES)
 # ==============================================================================
-def load_neon_system():
+def load_soft_styles():
     st.markdown(f"""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Plus+Jakarta+Sans:wght@300;400;700&family=Instrument+Serif:ital@0;1&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600&family=Space+Grotesk:wght@300;500;700&family=Instrument+Serif:ital@0;1&display=swap');
 
-        /* إعدادات الصفحة العامة */
         .stApp {{
-            background-color: {NeonTheme.DEEP_DARK};
-            color: #ffffff;
+            background-color: {SoftTheme.BG_DEEP};
+            color: {SoftTheme.TEXT_SILVER};
             font-family: 'Plus Jakarta Sans', sans-serif;
         }}
 
-        /* اسم المشروع المضيء (Glow Effect) */
-        .glowing-title {{
+        /* اسم المشروع بلمعة هادئة */
+        .soft-title {{
             font-family: 'Instrument Serif', serif;
-            font-size: 8rem;
+            font-size: 7.5rem;
             text-align: center;
-            color: #fff;
-            text-shadow: 
-                0 0 5px #fff,
-                0 0 10px #fff,
-                0 0 20px {NeonTheme.PURPLE_GLOW},
-                0 0 40px {NeonTheme.PURPLE_GLOW},
-                0 0 80px {NeonTheme.PURPLE_GLOW};
-            margin-bottom: 0px;
+            background: linear-gradient(180deg, #ffffff 30%, {SoftTheme.ACCENT_GLOW} 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
             line-height: 0.9;
         }}
 
-        .glowing-subtitle {{
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.9rem;
-            letter-spacing: 12px;
+        .soft-subtitle {{
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 10px;
             text-align: center;
-            color: {NeonTheme.CYAN_GLOW};
-            text-shadow: 0 0 10px {NeonTheme.CYAN_GLOW};
+            color: {SoftTheme.MAIN_SOFT};
             margin-bottom: 60px;
             text-transform: uppercase;
-            font-weight: 900;
         }}
 
-        /* الكروت المضيئة (Cyber Containers) */
-        .cyber-card {{
-            background: rgba(255, 255, 255, 0.015);
-            border: 1px solid rgba(188, 19, 254, 0.2);
-            border-radius: 40px;
-            padding: 50px;
-            margin: 40px auto;
-            max-width: 1000px;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 1);
-            transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        /* كروت متناظرة (Symmetrical Cards) */
+        .glass-card {{
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 35px;
+            padding: 55px;
+            margin: 35px auto;
+            max-width: 950px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
         }}
-        .cyber-card:hover {{
-            border-color: {NeonTheme.PURPLE_GLOW};
-            box-shadow: 0 0 50px rgba(188, 19, 254, 0.15);
-            transform: scale(1.01);
+
+        /* ضبط المستطيلات الخاصة بالأسماء (Symmetry Fix) */
+        .team-container {{
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 40px;
+        }}
+        
+        .member-box {{
+            background: rgba(129, 140, 248, 0.08); /* لون لافندر شفاف */
+            border: 1px solid rgba(129, 140, 248, 0.2);
+            padding: 12px 28px;
+            border-radius: 100px;
+            font-size: 0.95rem;
+            color: {SoftTheme.ACCENT_GLOW};
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 140px; /* ضمان تماثل الحجم */
+            text-align: center;
+            transition: 0.3s all;
+        }}
+        .member-box:hover {{
+            background: {SoftTheme.ACCENT_GLOW};
+            color: #ffffff;
+            box-shadow: 0 0 20px {SoftTheme.ACCENT_GLOW}55;
+        }}
+
+        /* زر التحليل المريح */
+        .stButton > button {{
+            background: {SoftTheme.ACCENT_GLOW} !important;
+            color: #ffffff !important;
+            border: none !important;
+            font-family: 'Space Grotesk', sans-serif !important;
+            border-radius: 100px !important;
+            padding: 22px 70px !important;
+            font-weight: 700 !important;
+            display: block;
+            margin: 40px auto !important;
+            transition: 0.4s all !important;
+            box-shadow: 0 10px 30px {SoftTheme.ACCENT_GLOW}33 !important;
+        }}
+        .stButton > button:hover {{
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px {SoftTheme.ACCENT_GLOW}66 !important;
         }}
 
         /* حقول الإدخال */
         .stTextArea textarea {{
-            background: #000 !important;
-            border: 1px solid #1a1a1a !important;
+            background: rgba(0, 0, 0, 0.2) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
             border-radius: 25px !important;
-            color: {NeonTheme.CYAN_GLOW} !important;
-            font-size: 1.3rem !important;
-            padding: 35px !important;
-            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5) !important;
-        }}
-        .stTextArea textarea:focus {{
-            border-color: {NeonTheme.CYAN_GLOW} !important;
-        }}
-
-        /* الأزرار الـ Glow */
-        .stButton > button {{
-            background: transparent !important;
             color: #fff !important;
-            border: 2px solid {NeonTheme.PURPLE_GLOW} !important;
-            font-family: 'Orbitron', sans-serif !important;
-            border-radius: 100px !important;
-            padding: 25px 80px !important;
-            width: auto !important;
-            min-width: 380px;
-            display: block;
-            margin: 50px auto !important;
-            transition: 0.5s all !important;
-            font-weight: 900 !important;
-            letter-spacing: 3px !important;
-            text-shadow: 0 0 10px {NeonTheme.PURPLE_GLOW};
-            box-shadow: 0 0 20px {NeonTheme.PURPLE_GLOW}55;
-        }}
-        .stButton > button:hover {{
-            background: {NeonTheme.PURPLE_GLOW} !important;
-            box-shadow: 0 0 60px {NeonTheme.PURPLE_GLOW} !important;
-            transform: translateY(-5px);
-        }}
-
-        /* نتيجة التحليل المضيئة */
-        .result-glow {{
-            font-family: 'Instrument Serif', serif;
-            font-size: 9rem;
-            font-style: italic;
-            text-align: center;
-            color: {NeonTheme.CYAN_GLOW};
-            text-shadow: 
-                0 0 20px {NeonTheme.CYAN_GLOW},
-                0 0 50px {NeonTheme.CYAN_GLOW};
-            margin: 20px 0;
-            line-height: 1;
-        }}
-
-        /* أسماء التيم المضيئة */
-        .team-glow {{
-            background: rgba(188, 19, 254, 0.05);
-            border: 1px solid rgba(188, 19, 254, 0.1);
-            padding: 15px 30px;
-            border-radius: 100px;
-            font-size: 0.95rem;
-            color: {NeonTheme.PURPLE_GLOW};
-            text-shadow: 0 0 8px {NeonTheme.PURPLE_GLOW};
-            font-weight: 700;
-            transition: 0.3s;
-        }}
-        .team-glow:hover {{
-            background: {NeonTheme.PURPLE_GLOW};
-            color: #fff;
-            box-shadow: 0 0 20px {NeonTheme.PURPLE_GLOW};
+            padding: 30px !important;
+            font-size: 1.15rem !important;
         }}
 
         #MainMenu, footer, header {{visibility: hidden;}}
@@ -159,167 +135,156 @@ def load_neon_system():
     """, unsafe_allow_html=True)
 
 # ==============================================================================
-# 3. AI OPERATIONAL LOGIC
+# 3. ANALYTICS ENGINE
 # ==============================================================================
-class NeuralCore:
+class CoreEngine:
     def __init__(self):
-        self.active = False
-        self.vectorizer = None
-        self.encoder = None
-        self.engines = {}
+        self.ready = False
+        self.tfidf = None
+        self.le = None
+        self.models = {}
 
-    def power_on(self):
+    def start(self):
         try:
-            self.vectorizer = joblib.load("tfidf_vectorizer.joblib")
-            self.encoder = joblib.load("label_encoder.joblib")
-            self.engines = {
-                "SV-Machine (Quantum Linear)": joblib.load("linear_svc_model.joblib"),
-                "Logistic Neural Optimizer": joblib.load("logistic_regression_model.joblib"),
-                "Bayesian Probability Core": joblib.load("naive_bayes_model.joblib")
+            self.tfidf = joblib.load("tfidf_vectorizer.joblib")
+            self.le = joblib.load("label_encoder.joblib")
+            self.models = {
+                "Engine Alpha (Linear)": joblib.load("linear_svc_model.joblib"),
+                "Engine Beta (Logistic)": joblib.load("logistic_regression_model.joblib"),
+                "Engine Gamma (Naive)": joblib.load("naive_bayes_model.joblib")
             }
-            self.active = True
+            self.ready = True
             return True
         except:
             return False
 
-    def execute_inference(self, raw_text, engine_key):
-        t_start = time.time()
+    def predict_flow(self, text, key):
+        t0 = time.time()
         # Preprocessing
-        clean = raw_text.lower()
+        clean = text.lower()
         clean = re.sub(r'[^a-z\s]', '', clean)
-        # Vectorize & Predict
-        matrix = self.vectorizer.transform([clean])
-        model = self.engines[engine_key]
-        pred_idx = model.predict(matrix)[0]
-        label = self.encoder.inverse_transform([pred_idx])[0]
+        # Process
+        v = self.tfidf.transform([clean])
+        m = self.models[key]
+        idx = m.predict(v)[0]
+        label = self.le.inverse_transform([idx])[0]
         
-        # Calculate Confidence
-        if hasattr(model, "predict_proba"):
-            probs = model.predict_proba(matrix)[0]
+        if hasattr(m, "predict_proba"):
+            p = m.predict_proba(v)[0]
         else:
-            decisions = model.decision_function(matrix)[0]
-            exp_s = np.exp(decisions - np.max(decisions))
-            probs = exp_s / exp_s.sum()
+            d = m.decision_function(v)[0]
+            ex = np.exp(d - np.max(d))
+            p = ex / ex.sum()
             
         return {
-            "prediction": label,
-            "confidence": probs[pred_idx],
-            "all_dist": probs,
-            "classes": self.encoder.classes_,
-            "speed": time.time() - t_start
+            "label": label,
+            "conf": p[idx],
+            "all": p,
+            "classes": self.le.classes_,
+            "time": time.time() - t0
         }
 
 # ==============================================================================
-# 4. GLOW DATA VISUALIZER
+# 4. DATA VISUALS (EYE-COMFORT)
 # ==============================================================================
-class GlowViz:
+class SoftPlots:
     @staticmethod
-    def draw_probability_map(data):
+    def show_dist(data):
         plt.style.use('dark_background')
-        fig, ax = plt.subplots(figsize=(13, 6))
-        fig.patch.set_facecolor('#010101')
-        ax.set_facecolor('#010101')
+        fig, ax = plt.subplots(figsize=(12, 5))
+        fig.patch.set_facecolor(SoftTheme.BG_DEEP)
+        ax.set_facecolor(SoftTheme.BG_DEEP)
         
-        # ألوان مخصصة للتوهج
-        base_color = '#111111'
-        accent = NeonTheme.CYAN_GLOW
-        colors = [base_color] * len(data["classes"])
-        
+        # ألوان البارات الهادئة
+        colors = ['#1e293b'] * len(data["classes"])
         try:
-            winner_idx = list(data["classes"]).index(data["prediction"])
-            colors[winner_idx] = accent
+            win_idx = list(data["classes"]).index(data["label"])
+            colors[win_idx] = SoftTheme.ACCENT_GLOW
         except: pass
 
-        bars = ax.barh(data["classes"], data["all_dist"], color=colors, height=0.7)
+        ax.barh(data["classes"], data["all"], color=colors, edgecolor=None, height=0.6)
         
-        # تحسين الخطوط والعناوين
-        ax.set_title("NEURAL PROBABILITY DISTANCE", color=NeonTheme.PURPLE_GLOW, 
-                     fontsize=11, pad=40, fontfamily='Orbitron', weight='900')
+        ax.set_title("PROBABILITY SPECTRUM", color=SoftTheme.MAIN_SOFT, 
+                     fontsize=9, pad=30, fontfamily='Space Grotesk', letterspacing=3)
         
         ax.spines[['top', 'right', 'bottom', 'left']].set_visible(False)
-        ax.tick_params(axis='both', colors='#444', labelsize=12)
+        ax.tick_params(axis='both', colors='#475569', labelsize=11)
         plt.tight_layout()
         return fig
 
 # ==============================================================================
-# 5. PROJECT UI ORCHESTRATION
+# 5. UI LAYOUT
 # ==============================================================================
-def main():
-    load_neon_system()
-    core = NeuralCore()
+def run_app():
+    load_soft_styles()
+    engine = CoreEngine()
     
-    with st.spinner("Synchronizing Neural Assets..."):
-        is_ready = core.power_on()
+    with st.spinner("Booting Intelligence..."):
+        engine_up = engine.start()
 
-    # --- Header (The Glowing Part) ---
+    # --- Header ---
     st.markdown(f"""
-    <div style="margin-top: 80px;">
-        <h1 class="glowing-title">{NeonTheme.NAME}</h1>
-        <p class="glowing-subtitle">{NeonTheme.TAGLINE}</p>
+    <div style="margin-top: 70px;">
+        <h1 class="soft-title">{SoftTheme.NAME}</h1>
+        <p class="soft-subtitle">{SoftTheme.TAGLINE}</p>
     </div>
     """, unsafe_allow_html=True)
 
-    # --- Cyber Brief (Abstract) ---
-    st.markdown('<div class="cyber-card">', unsafe_allow_html=True)
-    st.markdown('<p style="text-align:center; color:#333; letter-spacing:5px; font-size:0.8rem; font-family:Orbitron;">PROJECT_MISSION_PROTOCOL</p>', unsafe_allow_html=True)
+    # --- Project Abstract ---
+    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+    st.markdown('<p style="text-align:center; color:#475569; letter-spacing:4px; font-size:0.75rem; font-family:Space Grotesk;">ARCHITECTURE OVERVIEW</p>', unsafe_allow_html=True)
     st.markdown(f"""
-    <div style="text-align:center; color:#666; font-size:1.2rem; line-height:2; margin-top:30px; font-weight:300;">
-        تم تصميم <b>NewsIQ Elite</b> ليكون الواجهة الأمامية لنظام تحليل لغوي معقد. 
-        باستخدام خوارزميات التعلم العميق (NLP)، يقوم النظام بتشريح الجمل والكلمات لتحويلها إلى إشارات رقمية، 
-        مما يسمح بتصنيف الأخبار العالمية بدقة تفوق القدرة البشرية التقليدية، موفراً بذلك حلولاً ذكية للأرشفة والفرز اللحظي.
+    <div style="text-align:center; color:#94a3b8; font-size:1.15rem; line-height:2; margin-top:25px; font-weight:300; max-width:800px; margin-left:auto; margin-right:auto;">
+        يعمل مشروع <b>NewsIQ</b> كجسر بين البيانات النصية الضخمة والتحليلات الذكية. 
+        من خلال توظيف خوارزميات التصنيف الآلي، يوفر النظام قدرة فورية على تحديد محتوى الأخبار 
+        بدقة عالية، مما يساعد المؤسسات الإعلامية على تنظيم تدفق المعلومات بشكل أوتوماتيكي بالكامل.
     </div>
     """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- Operations Terminal ---
-    st.markdown('<div class="cyber-card">', unsafe_allow_html=True)
-    st.markdown('<p style="color:#222; letter-spacing:5px; font-size:0.8rem; font-family:Orbitron; margin-bottom:30px;">NEURAL_INPUT_TERMINAL</p>', unsafe_allow_html=True)
+    # --- Input Section ---
+    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+    st.markdown('<p style="color:#475569; letter-spacing:4px; font-size:0.75rem; font-family:Space Grotesk; margin-bottom:25px;">NEURAL_STREAM_INPUT</p>', unsafe_allow_html=True)
     
-    user_input = st.text_area("Term", placeholder="Feed news data to the system...", height=300, label_visibility="collapsed")
+    user_text = st.text_area("News", placeholder="Enter news content for classification...", height=280, label_visibility="collapsed")
     
-    col_sel, col_empty = st.columns([1, 1])
-    with col_sel:
-        engine_choice = st.selectbox("Engine Select", list(core.engines.keys()) if is_ready else ["OFFLINE"])
+    m_col, _ = st.columns([1.5, 1])
+    with m_col:
+        m_choice = st.selectbox("Intelligence Unit", list(engine.models.keys()) if engine_up else ["Status: Offline"])
     
-    run_trigger = st.button("EXECUTE NEURAL SCAN")
+    exec_btn = st.button("EXECUTE ANALYSIS")
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- Analysis Outcome ---
-    if run_trigger and user_input:
-        if is_ready:
-            with st.spinner("Processing semantics..."):
-                res = core.execute_inference(user_input, engine_choice)
+    # --- Results ---
+    if exec_btn and user_text:
+        if engine_up:
+            with st.spinner("Decoding..."):
+                res = engine.predict_flow(user_text, m_choice)
                 
-                # The Big Result
-                st.markdown('<div class="cyber-card" style="border-color: #00f2ff33;">', unsafe_allow_html=True)
-                st.markdown(f'<p style="text-align:center; color:#444; letter-spacing:8px; font-family:Orbitron; font-size:0.9rem;">SCAN_COMPLETE</p>', unsafe_allow_html=True)
-                st.markdown(f'<h2 class="result-glow">{res["prediction"]}</h2>', unsafe_allow_html=True)
-                st.markdown(f'<p style="text-align:center; font-family:Orbitron; color:{NeonTheme.PURPLE_GLOW}; font-size:1.5rem; font-weight:900;">CONFIDENCE: {res["confidence"]*100:.2f}%</p>', unsafe_allow_html=True)
+                st.markdown('<div class="glass-card" style="border-color: rgba(129, 140, 248, 0.2);">', unsafe_allow_html=True)
+                st.markdown(f'<p style="text-align:center; color:#475569; letter-spacing:6px; font-family:Space Grotesk; font-size:0.8rem;">OUTPUT_SIGNAL</p>', unsafe_allow_html=True)
+                st.markdown(f'<h2 style="font-family:Instrument Serif; font-size:7rem; font-style:italic; text-align:center; color:{SoftTheme.ACCENT_GLOW}; margin:15px 0;">{res["label"]}</h2>', unsafe_allow_html=True)
+                st.markdown(f'<p style="text-align:center; font-family:Space Grotesk; color:{SoftTheme.MAIN_SOFT}; font-size:1.3rem;">RELIABILITY: {res["conf"]*100:.2f}%</p>', unsafe_allow_html=True)
                 
-                # The Probability Map (The Visual Proof)
-                st.markdown('<div style="margin-top:80px; padding-top:60px; border-top:1px solid #111;">', unsafe_allow_html=True)
-                st.pyplot(GlowViz.draw_probability_map(res))
+                st.markdown('<div style="margin-top:70px; padding-top:50px; border-top:1px solid rgba(255,255,255,0.03);">', unsafe_allow_html=True)
+                st.pyplot(SoftPlots.show_dist(res))
                 st.markdown('</div>', unsafe_allow_html=True)
                 st.markdown('</div>', unsafe_allow_html=True)
-        else:
-            st.error("Engine failure. Please check resource files.")
 
-    # --- Footer & Team Grid ---
+    # --- Footer & Team (Fixed Rectangles) ---
     st.markdown(f"""
-    <div style="margin-top:180px; padding:100px 0; border-top:1px solid #0a0a0a; text-align:center;">
-        <p style="letter-spacing:12px; color:#1a1a1a; font-size:0.9rem; margin-bottom:60px; font-family:Orbitron;">UNDER THE GUIDANCE OF YOUSSEF AL-BAROUDI</p>
-        <div style="display:flex; justify-content:center; flex-wrap:wrap; gap:25px;">
-            {"".join([f'<div class="team-glow">{name}</div>' for name in NeonTheme.TEAM])}
+    <div style="margin-top:160px; padding:100px 0; border-top:1px solid rgba(255,255,255,0.02); text-align:center;">
+        <p style="letter-spacing:12px; color:#334155; font-size:0.85rem; margin-bottom:50px; font-family:Space Grotesk;">UNDER THE GUIDANCE OF YOUSSEF AL-BAROUDI</p>
+        
+        <div class="team-container">
+            {"".join([f'<div class="member-box">{name}</div>' for name in SoftTheme.TEAM])}
         </div>
-        <p style="margin-top:80px; font-family:Orbitron; font-size:0.7rem; color:#0a0a0a; letter-spacing:8px;">
-            DECODING THE FUTURE • SECTION 1 TEAM • 2026
+        
+        <p style="margin-top:70px; font-family:Space Grotesk; font-size:0.7rem; color:#1e293b; letter-spacing:8px;">
+            COMPUTER SCIENCE • SECTION 1 • 2026
         </p>
     </div>
     """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
-    main()
-
-# ==============================================================================
-# END OF SYSTEM ARCHITECTURE (400+ LINES)
-# ==============================================================================
+    run_app()
