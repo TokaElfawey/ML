@@ -8,131 +8,150 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # ==============================================================================
-# 1. BRANDING & GLOW CONFIGURATION (معدلة بألوان هادئة)
+# 1. BRANDING & GLOW CONFIGURATION
 # ==============================================================================
 class NeonTheme:
     NAME = "NewsIQ Intelligence"
-    TAGLINE = "AI-Powered News Classification"  # تم إضافة TAGLINE
+    TAGLINE = "NEURAL NEWS CLASSIFIER"
     TEAM = ["آية احمد", "تقي نصر", "تقي علاء", "همت حمدي", "نورهان مدحت"]
     
-    # ألوان نيون هادئة ومريحة للعين
-    MAIN_GLOW = "#5b8def"          # أزرق ناعم بدلاً من اللافندر
-    SECONDARY_GLOW = "#00d4ff"     # سماوي أقل حدة
-    DEEP_BLACK = "#020202"
+    # ألوان مريحة للعين (أزرق هادئ بدلاً من اللافندر)
+    MAIN_GLOW = "#4A90D9"          # أزرق ناعم
+    SECONDARY_GLOW = "#6BB8FF"     # أزرق فاتح
+    DEEP_BLACK = "#0A0A0A"         # أسود داكن لكن أفتح قليلاً للخلفية
 
 # ==============================================================================
-# 2. CYBER-NEON CSS (تم تعديل القيم لتقليل المسافات والأحجام)
+# 2. CYBER-NEON CSS (معدل بالكامل لتحسين القراءة والشكل)
 # ==============================================================================
 def apply_neon_styles():
     st.markdown(f"""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Plus+Jakarta+Sans:wght@300;400;600&family=Instrument+Serif:ital@0;1&display=swap');
 
+        /* الخلفية */
         .stApp {{
             background-color: {NeonTheme.DEEP_BLACK};
-            color: #ffffff;
+            color: #e0e0e0;  /* نص رمادي فاتح بدلاً من الأبيض الصارخ */
             font-family: 'Plus Jakarta Sans', sans-serif;
         }}
 
-        /* عنوان أصغر حجماً */
+        /* عنوان رئيسي - حجم مناسب */
         .neon-title {{
             font-family: 'Instrument Serif', serif;
-            font-size: 4rem;          /* من 7rem إلى 4rem */
+            font-size: 4.5rem;
             text-align: center;
-            color: #fff;
+            color: #ffffff;
             text-shadow: 
-                0 0 10px {NeonTheme.MAIN_GLOW},
-                0 0 20px {NeonTheme.MAIN_GLOW},
-                0 0 40px {NeonTheme.MAIN_GLOW};
-            margin-bottom: 5px;        /* تقليل المسافة */
-            line-height: 1;
+                0 0 8px {NeonTheme.MAIN_GLOW},
+                0 0 15px {NeonTheme.MAIN_GLOW};
+            margin-bottom: 5px;
+            line-height: 1.1;
         }}
 
+        /* تحت العنوان */
         .neon-subtitle {{
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem;         /* أصغر قليلاً */
-            letter-spacing: 8px;
+            font-size: 0.9rem;  /* أكبر قليلاً */
+            letter-spacing: 6px;
             text-align: center;
             color: {NeonTheme.SECONDARY_GLOW};
-            text-shadow: 0 0 5px {NeonTheme.SECONDARY_GLOW};
-            margin-bottom: 30px;       /* تقليل المسافة */
+            text-shadow: 0 0 4px {NeonTheme.SECONDARY_GLOW};
+            margin-bottom: 25px;
             text-transform: uppercase;
         }}
 
-        /* الكروت: padding و margin أصغر */
+        /* الكروت - أكثر أناقة ومسافات مريحة */
         .neon-card {{
-            background: rgba(255, 255, 255, 0.01);
-            border: 1px solid rgba(91, 141, 239, 0.2);  /* لون معدل */
-            border-radius: 20px;        /* من 30 إلى 20 */
-            padding: 25px;              /* من 50px إلى 25px */
-            margin: 15px auto;          /* من 30px إلى 15px */
-            max-width: 850px;           /* أصغر قليلاً */
-            box-shadow: 0 0 20px rgba(91, 141, 239, 0.05);
-            transition: 0.5s;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(74, 144, 217, 0.15);
+            border-radius: 16px;
+            padding: 35px 30px;
+            margin: 20px auto;
+            max-width: 800px;
+            box-shadow: 0 0 15px rgba(74, 144, 217, 0.03);
+            transition: 0.3s;
         }}
         .neon-card:hover {{
             border-color: {NeonTheme.MAIN_GLOW};
-            box-shadow: 0 0 30px rgba(91, 141, 239, 0.2);
+            box-shadow: 0 0 25px rgba(74, 144, 217, 0.1);
         }}
 
-        /* حقل الإدخال: ارتفاع أقل */
+        /* حقل الإدخال - مريح للقراءة */
         .stTextArea textarea {{
-            background: #000 !important;
-            border: 1px solid #222 !important;
-            border-radius: 15px !important;  /* من 20 إلى 15 */
-            color: {NeonTheme.SECONDARY_GLOW} !important;
-            font-size: 1rem !important;      /* أصغر */
-            padding: 15px !important;         /* من 25px إلى 15px */
-            box-shadow: inset 0 0 10px rgba(0, 212, 255, 0.05) !important;
-            height: 180px !important;         /* إضافة ارتفاع محدد أصغر */
+            background: #111 !important;
+            border: 1px solid #333 !important;
+            border-radius: 12px !important;
+            color: #e0e0e0 !important;
+            font-size: 1.1rem !important;  /* أكبر */
+            padding: 18px !important;
+            box-shadow: inset 0 0 8px rgba(107, 184, 255, 0.03) !important;
+            line-height: 1.6;
+        }}
+        .stTextArea textarea:focus {{
+            border-color: {NeonTheme.MAIN_GLOW} !important;
+            box-shadow: 0 0 10px {NeonTheme.MAIN_GLOW}22 !important;
         }}
 
-        /* الزر: عرض أقل */
+        /* زر التحليل - واضح وجذاب */
         .stButton > button {{
             background: transparent !important;
             color: #fff !important;
             border: 2px solid {NeonTheme.MAIN_GLOW} !important;
             font-family: 'Orbitron', sans-serif !important;
-            border-radius: 50px !important;   /* من 100 إلى 50 */
-            padding: 12px 30px !important;     /* من 20px 60px إلى 12px 30px */
+            border-radius: 50px !important;
+            padding: 14px 45px !important;
             width: auto !important;
-            min-width: 250px;                  /* من 350px إلى 250px */
+            min-width: 220px;
             display: block;
-            margin: 20px auto !important;      /* من 40px إلى 20px */
-            transition: 0.4s all !important;
-            text-shadow: 0 0 10px {NeonTheme.MAIN_GLOW};
-            box-shadow: 0 0 15px {NeonTheme.MAIN_GLOW}44;
-            font-size: 0.8rem;                /* خط أصغر */
+            margin: 25px auto !important;
+            transition: 0.3s all !important;
+            text-shadow: 0 0 8px {NeonTheme.MAIN_GLOW};
+            box-shadow: 0 0 12px {NeonTheme.MAIN_GLOW}33;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
         }}
         .stButton > button:hover {{
             background: {NeonTheme.MAIN_GLOW} !important;
-            box-shadow: 0 0 40px {NeonTheme.MAIN_GLOW} !important;
-            transform: scale(1.05);
+            box-shadow: 0 0 30px {NeonTheme.MAIN_GLOW} !important;
+            transform: scale(1.03);
         }}
 
-        /* نتيجة التصنيف: حجم أصغر */
+        /* نتيجة التصنيف - واضحة وكبيرة */
         .neon-result {{
             font-family: 'Instrument Serif', serif;
-            font-size: 5rem;              /* من 8rem إلى 5rem */
+            font-size: 4rem;  /* من 5rem إلى 4rem لتتناسب */
             font-style: italic;
             text-align: center;
             color: {NeonTheme.SECONDARY_GLOW};
-            text-shadow: 0 0 30px {NeonTheme.SECONDARY_GLOW};
-            margin: 10px 0;               /* تقليل المسافة */
+            text-shadow: 0 0 20px {NeonTheme.SECONDARY_GLOW};
+            margin: 10px 0;
         }}
 
-        /* فريق العمل */
+        /* عناصر الفريق */
         .member-glow {{
-            background: rgba(0, 212, 255, 0.05);
-            border: 1px solid rgba(0, 212, 255, 0.1);
-            padding: 8px 18px;             /* أصغر */
+            background: rgba(107, 184, 255, 0.06);
+            border: 1px solid rgba(107, 184, 255, 0.15);
+            padding: 10px 22px;
             border-radius: 50px;
-            font-size: 0.8rem;
+            font-size: 0.95rem;
             color: {NeonTheme.SECONDARY_GLOW};
-            text-shadow: 0 0 5px {NeonTheme.SECONDARY_GLOW};
-            font-weight: 600;
+            text-shadow: 0 0 3px {NeonTheme.SECONDARY_GLOW};
+            font-weight: 500;
         }}
 
+        /* تحسين التحديد */
+        .stSelectbox label {{
+            color: #aaa !important;
+            font-size: 0.9rem !important;
+        }}
+        .stSelectbox div[data-baseweb="select"] > div {{
+            background-color: #111 !important;
+            border: 1px solid #333 !important;
+            color: #e0e0e0 !important;
+            border-radius: 10px !important;
+        }}
+
+        /* إخفاء العناصر الافتراضية */
         #MainMenu, footer, header {{visibility: hidden;}}
     </style>
     """, unsafe_allow_html=True)
@@ -186,17 +205,17 @@ class AIClassifier:
         }
 
 # ==============================================================================
-# 4. NEON VISUALIZER (بدون تغيير جوهري)
+# 4. NEON VISUALIZER (معدل قليلاً للألوان)
 # ==============================================================================
 class NeonViz:
     @staticmethod
     def plot_glow_bars(data):
         plt.style.use('dark_background')
-        fig, ax = plt.subplots(figsize=(10, 4))  # أصغر قليلاً
-        fig.patch.set_facecolor('#020202')
-        ax.set_facecolor('#020202')
+        fig, ax = plt.subplots(figsize=(10, 4))
+        fig.patch.set_facecolor('#0A0A0A')
+        ax.set_facecolor('#0A0A0A')
         
-        colors = ['#111111'] * len(data["classes"])
+        colors = ['#1a1a1a'] * len(data["classes"])
         target_idx = list(data["classes"]).index(data["category"])
         colors[target_idx] = NeonTheme.SECONDARY_GLOW
 
@@ -205,18 +224,18 @@ class NeonViz:
         for i, bar in enumerate(bars):
             if i == target_idx:
                 bar.set_linewidth(2)
-                bar.set_edgecolor('#fff')
+                bar.set_edgecolor('#ffffff')
 
         ax.set_title("NEURAL PROBABILITY SPECTRUM", color=NeonTheme.SECONDARY_GLOW, 
-                     fontsize=8, pad=20, fontfamily='Orbitron', weight='bold')
+                     fontsize=9, pad=15, fontfamily='Orbitron', weight='bold')
         
         ax.spines[['top', 'right', 'bottom', 'left']].set_visible(False)
-        ax.tick_params(axis='both', colors='#444', labelsize=9)
+        ax.tick_params(axis='both', colors='#888', labelsize=10)
         plt.tight_layout()
         return fig
 
 # ==============================================================================
-# 5. MAIN INTERFACE (تم تقليل المسافات)
+# 5. MAIN INTERFACE (تم تعديل المسافات)
 # ==============================================================================
 def main():
     apply_neon_styles()
@@ -225,61 +244,63 @@ def main():
     with st.spinner("Powering up Neural Cores..."):
         loaded = brain.setup()
 
-    # --- Header (مسافة علوية أقل) ---
+    # --- Header ---
     st.markdown(f"""
-    <div style="margin-top: 20px;">   <!-- من 50px إلى 20px -->
+    <div style="margin-top: 20px;">
         <h1 class="neon-title">{NeonTheme.NAME}</h1>
         <p class="neon-subtitle">{NeonTheme.TAGLINE}</p>
     </div>
     """, unsafe_allow_html=True)
 
-    # --- Project Abstract (كارد أصغر) ---
+    # --- Project Abstract ---
     st.markdown('<div class="neon-card">', unsafe_allow_html=True)
-    st.markdown('<p style="text-align:center; color:#555; letter-spacing:2px; font-size:0.6rem; font-family:Orbitron;">PROJECT DATA</p>', unsafe_allow_html=True)
+    st.markdown('<p style="text-align:center; color:#777; letter-spacing:2px; font-size:0.65rem; font-family:Orbitron;">PROJECT DATA</p>', unsafe_allow_html=True)
     st.markdown(f"""
-    <div style="text-align:center; color:#aaa; font-size:0.9rem; line-height:1.6; margin-top:10px;">
-        منصة <b>NewsIQ</b> هي محرك ذكاء اصطناعي فائق التطور يعتمد على معالجة اللغات الطبيعية (NLP). 
+    <div style="text-align:center; color:#ccc; font-size:1rem; line-height:1.7; margin-top:10px;">
+        منصة <b style="color:#fff;">NewsIQ</b> هي محرك ذكاء اصطناعي فائق التطور يعتمد على معالجة اللغات الطبيعية (NLP). 
         النظام مصمم لفك شفرة النصوص الخبرية وتصنيفها آلياً باستخدام مصفوفات رياضية معقدة. 
         هذا الابتكار يقلل التدخل البشري في فرز الأخبار ويزيد من سرعة استجابة الأنظمة الذكية للمعلومات المتدفقة.
     </div>
     """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- Input Terminal (كارد أصغر) ---
+    # --- Input Terminal ---
     st.markdown('<div class="neon-card">', unsafe_allow_html=True)
-    st.markdown('<p style="color:#444; letter-spacing:2px; font-size:0.6rem; font-family:Orbitron; margin-bottom:10px;">INPUT_STREAM_TERMINAL</p>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#666; letter-spacing:2px; font-size:0.65rem; font-family:Orbitron; margin-bottom:10px;">INPUT_STREAM_TERMINAL</p>', unsafe_allow_html=True)
     
-    user_text = st.text_area("Input", placeholder="Enter raw news text for neural analysis...", height=180, label_visibility="collapsed")  # ارتفاع 180
+    user_text = st.text_area("Input", placeholder="Enter raw news text for neural analysis...", height=200, label_visibility="collapsed")
     
     selected_mdl = st.selectbox("Select Neural Core", list(brain.models.keys()) if loaded else ["Offline"])
     
     analyze_btn = st.button("INITIATE NEURAL SCAN")
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- Result Execution (مع مسافات أقل) ---
+    # --- Result Execution ---
     if analyze_btn and user_text:
         if loaded:
             with st.spinner("Decoding semantics..."):
                 res = brain.predict(user_text, selected_mdl)
                 
-                st.markdown('<div class="neon-card" style="border-color: #00d4ff44;">', unsafe_allow_html=True)
-                st.markdown(f'<p style="text-align:center; color:#555; letter-spacing:3px; font-family:Orbitron; font-size:0.7rem;">INFERENCE_RESULT</p>', unsafe_allow_html=True)
+                # Glowing Result
+                st.markdown('<div class="neon-card" style="border-color: #6BB8FF44;">', unsafe_allow_html=True)
+                st.markdown(f'<p style="text-align:center; color:#777; letter-spacing:3px; font-family:Orbitron; font-size:0.7rem;">INFERENCE_RESULT</p>', unsafe_allow_html=True)
                 st.markdown(f'<h2 class="neon-result">{res["category"]}</h2>', unsafe_allow_html=True)
-                st.markdown(f'<p style="text-align:center; font-family:Orbitron; color:{NeonTheme.MAIN_GLOW}; font-size:1rem;">ACCURACY_LEVEL: {res["score"]*100:.2f}%</p>', unsafe_allow_html=True)
+                st.markdown(f'<p style="text-align:center; font-family:Orbitron; color:{NeonTheme.MAIN_GLOW}; font-size:1.1rem;">ACCURACY_LEVEL: {res["score"]*100:.2f}%</p>', unsafe_allow_html=True)
                 
-                st.markdown('<div style="margin-top:30px; padding-top:20px; border-top:1px solid #111;">', unsafe_allow_html=True)
+                # Probability Map
+                st.markdown('<div style="margin-top:30px; padding-top:20px; border-top:1px solid #222;">', unsafe_allow_html=True)
                 st.pyplot(NeonViz.plot_glow_bars(res))
                 st.markdown('</div>', unsafe_allow_html=True)
                 st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- Footer & Team (مسافات أقل) ---
+    # --- Footer & Team ---
     st.markdown(f"""
-    <div style="margin-top:60px; padding:50px 0; border-top:1px solid #111; text-align:center;">
-        <p style="letter-spacing:8px; color:#222; font-size:0.7rem; margin-bottom:30px; font-family:Orbitron;">UNDER THE GUIDANCE OF YOUSSEF AL-BAROUDI</p>
+    <div style="margin-top:80px; padding:50px 0; border-top:1px solid #1a1a1a; text-align:center;">
+        <p style="letter-spacing:6px; color:#444; font-size:0.75rem; margin-bottom:30px; font-family:Orbitron;">UNDER THE GUIDANCE OF YOUSSEF AL-BAROUDI</p>
         <div style="display:flex; justify-content:center; flex-wrap:wrap; gap:15px;">
             {"".join([f'<div class="member-glow">{name}</div>' for name in NeonTheme.TEAM])}
         </div>
-        <p style="margin-top:30px; font-family:Orbitron; font-size:0.5rem; color:#111; letter-spacing:3px;">
+        <p style="margin-top:40px; font-family:Orbitron; font-size:0.55rem; color:#333; letter-spacing:3px;">
             SYSTEM STATUS: OPERATIONAL | BUILD: 2026.05
         </p>
     </div>
