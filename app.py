@@ -494,7 +494,7 @@ def main():
     st.markdown("<br><hr style='border-color:rgba(0,200,255,0.1);'>", unsafe_allow_html=True)
     st.markdown("""
     <div class="footer">
-        Developed with ❤️ by <b>Section 1 Team</b><br>
+        Developed with ❤️ by <b>Section 1&3 Team</b><br>
         <span>Aya Ahmed | Toka Nasr | Toka Alaa | Hemmat Hamdi | Nourhan Medhat</span><br>
         <span style="font-size:0.8rem; color:#2a3a60;">© 2026 Academic Deployment Project</span>
     </div>
