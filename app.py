@@ -8,126 +8,129 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # ==============================================================================
-# 1. SOFT NEON IDENTITY (Eye-Comfort Edition)
+# 1. BRANDING & GLOW CONFIGURATION (معدلة بألوان هادئة)
 # ==============================================================================
-class SoftTheme:
+class NeonTheme:
     NAME = "NewsIQ Intelligence"
-    TAGLINE = "DECODING NEURAL SIGNALS"
-    VERSION = "v4.2.0 — Soft Vision"
-    
-    # أسماء الفريق
+    TAGLINE = "AI-Powered News Classification"  # تم إضافة TAGLINE
     TEAM = ["آية احمد", "تقي نصر", "تقي علاء", "همت حمدي", "نورهان مدحت"]
     
-    # بالتة الألوان الهادئة (Muted Palette)
-    MAIN_SOFT = "#94a3b8"      # أزرق ضبابي هادئ للـ Subtitles
-    ACCENT_GLOW = "#818cf8"    # بنفسجي لافندر ناعم (مريح للعين)
-    BG_DEEP = "#0f172a"        # أزرق ليلي غامق جداً (أفضل من الأسود الصريح)
-    TEXT_SILVER = "#e2e8f0"    # فضي فاتح للنصوص
+    # ألوان نيون هادئة ومريحة للعين
+    MAIN_GLOW = "#5b8def"          # أزرق ناعم بدلاً من اللافندر
+    SECONDARY_GLOW = "#00d4ff"     # سماوي أقل حدة
+    DEEP_BLACK = "#020202"
 
 # ==============================================================================
-# 2. REFINED SOFT-GLOW CSS (SYMMETRIC BOXES)
+# 2. CYBER-NEON CSS (تم تعديل القيم لتقليل المسافات والأحجام)
 # ==============================================================================
-def load_soft_styles():
+def apply_neon_styles():
     st.markdown(f"""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600&family=Space+Grotesk:wght@300;500;700&family=Instrument+Serif:ital@0;1&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Plus+Jakarta+Sans:wght@300;400;600&family=Instrument+Serif:ital@0;1&display=swap');
 
         .stApp {{
-            background-color: {SoftTheme.BG_DEEP};
-            color: {SoftTheme.TEXT_SILVER};
+            background-color: {NeonTheme.DEEP_BLACK};
+            color: #ffffff;
             font-family: 'Plus Jakarta Sans', sans-serif;
         }}
 
-        /* اسم المشروع بلمعة هادئة */
-        .soft-title {{
+        /* عنوان أصغر حجماً */
+        .neon-title {{
             font-family: 'Instrument Serif', serif;
-            font-size: 7.5rem;
+            font-size: 4rem;          /* من 7rem إلى 4rem */
             text-align: center;
-            background: linear-gradient(180deg, #ffffff 30%, {SoftTheme.ACCENT_GLOW} 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
-            line-height: 0.9;
+            color: #fff;
+            text-shadow: 
+                0 0 10px {NeonTheme.MAIN_GLOW},
+                0 0 20px {NeonTheme.MAIN_GLOW},
+                0 0 40px {NeonTheme.MAIN_GLOW};
+            margin-bottom: 5px;        /* تقليل المسافة */
+            line-height: 1;
         }}
 
-        .soft-subtitle {{
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.85rem;
-            letter-spacing: 10px;
+        .neon-subtitle {{
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;         /* أصغر قليلاً */
+            letter-spacing: 8px;
             text-align: center;
-            color: {SoftTheme.MAIN_SOFT};
-            margin-bottom: 60px;
+            color: {NeonTheme.SECONDARY_GLOW};
+            text-shadow: 0 0 5px {NeonTheme.SECONDARY_GLOW};
+            margin-bottom: 30px;       /* تقليل المسافة */
             text-transform: uppercase;
         }}
 
-        /* كروت متناظرة (Symmetrical Cards) */
-        .glass-card {{
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 35px;
-            padding: 55px;
-            margin: 35px auto;
-            max-width: 950px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        /* الكروت: padding و margin أصغر */
+        .neon-card {{
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(91, 141, 239, 0.2);  /* لون معدل */
+            border-radius: 20px;        /* من 30 إلى 20 */
+            padding: 25px;              /* من 50px إلى 25px */
+            margin: 15px auto;          /* من 30px إلى 15px */
+            max-width: 850px;           /* أصغر قليلاً */
+            box-shadow: 0 0 20px rgba(91, 141, 239, 0.05);
+            transition: 0.5s;
+        }}
+        .neon-card:hover {{
+            border-color: {NeonTheme.MAIN_GLOW};
+            box-shadow: 0 0 30px rgba(91, 141, 239, 0.2);
         }}
 
-        /* ضبط المستطيلات الخاصة بالأسماء (Symmetry Fix) */
-        .team-container {{
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 40px;
-        }}
-        
-        .member-box {{
-            background: rgba(129, 140, 248, 0.08); /* لون لافندر شفاف */
-            border: 1px solid rgba(129, 140, 248, 0.2);
-            padding: 12px 28px;
-            border-radius: 100px;
-            font-size: 0.95rem;
-            color: {SoftTheme.ACCENT_GLOW};
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 140px; /* ضمان تماثل الحجم */
-            text-align: center;
-            transition: 0.3s all;
-        }}
-        .member-box:hover {{
-            background: {SoftTheme.ACCENT_GLOW};
-            color: #ffffff;
-            box-shadow: 0 0 20px {SoftTheme.ACCENT_GLOW}55;
+        /* حقل الإدخال: ارتفاع أقل */
+        .stTextArea textarea {{
+            background: #000 !important;
+            border: 1px solid #222 !important;
+            border-radius: 15px !important;  /* من 20 إلى 15 */
+            color: {NeonTheme.SECONDARY_GLOW} !important;
+            font-size: 1rem !important;      /* أصغر */
+            padding: 15px !important;         /* من 25px إلى 15px */
+            box-shadow: inset 0 0 10px rgba(0, 212, 255, 0.05) !important;
+            height: 180px !important;         /* إضافة ارتفاع محدد أصغر */
         }}
 
-        /* زر التحليل المريح */
+        /* الزر: عرض أقل */
         .stButton > button {{
-            background: {SoftTheme.ACCENT_GLOW} !important;
-            color: #ffffff !important;
-            border: none !important;
-            font-family: 'Space Grotesk', sans-serif !important;
-            border-radius: 100px !important;
-            padding: 22px 70px !important;
-            font-weight: 700 !important;
+            background: transparent !important;
+            color: #fff !important;
+            border: 2px solid {NeonTheme.MAIN_GLOW} !important;
+            font-family: 'Orbitron', sans-serif !important;
+            border-radius: 50px !important;   /* من 100 إلى 50 */
+            padding: 12px 30px !important;     /* من 20px 60px إلى 12px 30px */
+            width: auto !important;
+            min-width: 250px;                  /* من 350px إلى 250px */
             display: block;
-            margin: 40px auto !important;
+            margin: 20px auto !important;      /* من 40px إلى 20px */
             transition: 0.4s all !important;
-            box-shadow: 0 10px 30px {SoftTheme.ACCENT_GLOW}33 !important;
+            text-shadow: 0 0 10px {NeonTheme.MAIN_GLOW};
+            box-shadow: 0 0 15px {NeonTheme.MAIN_GLOW}44;
+            font-size: 0.8rem;                /* خط أصغر */
         }}
         .stButton > button:hover {{
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px {SoftTheme.ACCENT_GLOW}66 !important;
+            background: {NeonTheme.MAIN_GLOW} !important;
+            box-shadow: 0 0 40px {NeonTheme.MAIN_GLOW} !important;
+            transform: scale(1.05);
         }}
 
-        /* حقول الإدخال */
-        .stTextArea textarea {{
-            background: rgba(0, 0, 0, 0.2) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            border-radius: 25px !important;
-            color: #fff !important;
-            padding: 30px !important;
-            font-size: 1.15rem !important;
+        /* نتيجة التصنيف: حجم أصغر */
+        .neon-result {{
+            font-family: 'Instrument Serif', serif;
+            font-size: 5rem;              /* من 8rem إلى 5rem */
+            font-style: italic;
+            text-align: center;
+            color: {NeonTheme.SECONDARY_GLOW};
+            text-shadow: 0 0 30px {NeonTheme.SECONDARY_GLOW};
+            margin: 10px 0;               /* تقليل المسافة */
+        }}
+
+        /* فريق العمل */
+        .member-glow {{
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            padding: 8px 18px;             /* أصغر */
+            border-radius: 50px;
+            font-size: 0.8rem;
+            color: {NeonTheme.SECONDARY_GLOW};
+            text-shadow: 0 0 5px {NeonTheme.SECONDARY_GLOW};
+            font-weight: 600;
         }}
 
         #MainMenu, footer, header {{visibility: hidden;}}
@@ -135,156 +138,152 @@ def load_soft_styles():
     """, unsafe_allow_html=True)
 
 # ==============================================================================
-# 3. ANALYTICS ENGINE
+# 3. AI ENGINE CLASS (بدون تغيير)
 # ==============================================================================
-class CoreEngine:
+class AIClassifier:
     def __init__(self):
         self.ready = False
         self.tfidf = None
         self.le = None
         self.models = {}
 
-    def start(self):
+    def setup(self):
         try:
             self.tfidf = joblib.load("tfidf_vectorizer.joblib")
             self.le = joblib.load("label_encoder.joblib")
             self.models = {
-                "Engine Alpha (Linear)": joblib.load("linear_svc_model.joblib"),
-                "Engine Beta (Logistic)": joblib.load("logistic_regression_model.joblib"),
-                "Engine Gamma (Naive)": joblib.load("naive_bayes_model.joblib")
+                "Neural Linear Core": joblib.load("linear_svc_model.joblib"),
+                "Logistic Matrix Core": joblib.load("logistic_regression_model.joblib"),
+                "Naive Bayes Core": joblib.load("naive_bayes_model.joblib")
             }
             self.ready = True
             return True
         except:
             return False
 
-    def predict_flow(self, text, key):
-        t0 = time.time()
-        # Preprocessing
+    def predict(self, text, model_key):
+        start = time.time()
         clean = text.lower()
         clean = re.sub(r'[^a-z\s]', '', clean)
-        # Process
-        v = self.tfidf.transform([clean])
-        m = self.models[key]
-        idx = m.predict(v)[0]
-        label = self.le.inverse_transform([idx])[0]
+        vec = self.tfidf.transform([clean])
+        mdl = self.models[model_key]
+        idx = mdl.predict(vec)[0]
+        cat = self.le.inverse_transform([idx])[0]
         
-        if hasattr(m, "predict_proba"):
-            p = m.predict_proba(v)[0]
+        if hasattr(mdl, "predict_proba"):
+            probs = mdl.predict_proba(vec)[0]
         else:
-            d = m.decision_function(v)[0]
-            ex = np.exp(d - np.max(d))
-            p = ex / ex.sum()
+            d = mdl.decision_function(vec)[0]
+            e = np.exp(d - np.max(d))
+            probs = e / e.sum()
             
         return {
-            "label": label,
-            "conf": p[idx],
-            "all": p,
+            "category": cat,
+            "score": probs[idx],
+            "all_probs": probs,
             "classes": self.le.classes_,
-            "time": time.time() - t0
+            "latency": time.time() - start
         }
 
 # ==============================================================================
-# 4. DATA VISUALS (EYE-COMFORT)
+# 4. NEON VISUALIZER (بدون تغيير جوهري)
 # ==============================================================================
-class SoftPlots:
+class NeonViz:
     @staticmethod
-    def show_dist(data):
+    def plot_glow_bars(data):
         plt.style.use('dark_background')
-        fig, ax = plt.subplots(figsize=(12, 5))
-        fig.patch.set_facecolor(SoftTheme.BG_DEEP)
-        ax.set_facecolor(SoftTheme.BG_DEEP)
+        fig, ax = plt.subplots(figsize=(10, 4))  # أصغر قليلاً
+        fig.patch.set_facecolor('#020202')
+        ax.set_facecolor('#020202')
         
-        # ألوان البارات الهادئة
-        colors = ['#1e293b'] * len(data["classes"])
-        try:
-            win_idx = list(data["classes"]).index(data["label"])
-            colors[win_idx] = SoftTheme.ACCENT_GLOW
-        except: pass
+        colors = ['#111111'] * len(data["classes"])
+        target_idx = list(data["classes"]).index(data["category"])
+        colors[target_idx] = NeonTheme.SECONDARY_GLOW
 
-        ax.barh(data["classes"], data["all"], color=colors, edgecolor=None, height=0.6)
+        bars = ax.barh(data["classes"], data["all_probs"], color=colors, edgecolor=colors, height=0.5)
         
-        ax.set_title("PROBABILITY SPECTRUM", color=SoftTheme.MAIN_SOFT, 
-                     fontsize=9, pad=30, fontfamily='Space Grotesk', letterspacing=3)
+        for i, bar in enumerate(bars):
+            if i == target_idx:
+                bar.set_linewidth(2)
+                bar.set_edgecolor('#fff')
+
+        ax.set_title("NEURAL PROBABILITY SPECTRUM", color=NeonTheme.SECONDARY_GLOW, 
+                     fontsize=8, pad=20, fontfamily='Orbitron', weight='bold')
         
         ax.spines[['top', 'right', 'bottom', 'left']].set_visible(False)
-        ax.tick_params(axis='both', colors='#475569', labelsize=11)
+        ax.tick_params(axis='both', colors='#444', labelsize=9)
         plt.tight_layout()
         return fig
 
 # ==============================================================================
-# 5. UI LAYOUT
+# 5. MAIN INTERFACE (تم تقليل المسافات)
 # ==============================================================================
-def run_app():
-    load_soft_styles()
-    engine = CoreEngine()
+def main():
+    apply_neon_styles()
+    brain = AIClassifier()
     
-    with st.spinner("Booting Intelligence..."):
-        engine_up = engine.start()
+    with st.spinner("Powering up Neural Cores..."):
+        loaded = brain.setup()
 
-    # --- Header ---
+    # --- Header (مسافة علوية أقل) ---
     st.markdown(f"""
-    <div style="margin-top: 70px;">
-        <h1 class="soft-title">{SoftTheme.NAME}</h1>
-        <p class="soft-subtitle">{SoftTheme.TAGLINE}</p>
+    <div style="margin-top: 20px;">   <!-- من 50px إلى 20px -->
+        <h1 class="neon-title">{NeonTheme.NAME}</h1>
+        <p class="neon-subtitle">{NeonTheme.TAGLINE}</p>
     </div>
     """, unsafe_allow_html=True)
 
-    # --- Project Abstract ---
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.markdown('<p style="text-align:center; color:#475569; letter-spacing:4px; font-size:0.75rem; font-family:Space Grotesk;">ARCHITECTURE OVERVIEW</p>', unsafe_allow_html=True)
+    # --- Project Abstract (كارد أصغر) ---
+    st.markdown('<div class="neon-card">', unsafe_allow_html=True)
+    st.markdown('<p style="text-align:center; color:#555; letter-spacing:2px; font-size:0.6rem; font-family:Orbitron;">PROJECT DATA</p>', unsafe_allow_html=True)
     st.markdown(f"""
-    <div style="text-align:center; color:#94a3b8; font-size:1.15rem; line-height:2; margin-top:25px; font-weight:300; max-width:800px; margin-left:auto; margin-right:auto;">
-        يعمل مشروع <b>NewsIQ</b> كجسر بين البيانات النصية الضخمة والتحليلات الذكية. 
-        من خلال توظيف خوارزميات التصنيف الآلي، يوفر النظام قدرة فورية على تحديد محتوى الأخبار 
-        بدقة عالية، مما يساعد المؤسسات الإعلامية على تنظيم تدفق المعلومات بشكل أوتوماتيكي بالكامل.
+    <div style="text-align:center; color:#aaa; font-size:0.9rem; line-height:1.6; margin-top:10px;">
+        منصة <b>NewsIQ</b> هي محرك ذكاء اصطناعي فائق التطور يعتمد على معالجة اللغات الطبيعية (NLP). 
+        النظام مصمم لفك شفرة النصوص الخبرية وتصنيفها آلياً باستخدام مصفوفات رياضية معقدة. 
+        هذا الابتكار يقلل التدخل البشري في فرز الأخبار ويزيد من سرعة استجابة الأنظمة الذكية للمعلومات المتدفقة.
     </div>
     """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- Input Section ---
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.markdown('<p style="color:#475569; letter-spacing:4px; font-size:0.75rem; font-family:Space Grotesk; margin-bottom:25px;">NEURAL_STREAM_INPUT</p>', unsafe_allow_html=True)
+    # --- Input Terminal (كارد أصغر) ---
+    st.markdown('<div class="neon-card">', unsafe_allow_html=True)
+    st.markdown('<p style="color:#444; letter-spacing:2px; font-size:0.6rem; font-family:Orbitron; margin-bottom:10px;">INPUT_STREAM_TERMINAL</p>', unsafe_allow_html=True)
     
-    user_text = st.text_area("News", placeholder="Enter news content for classification...", height=280, label_visibility="collapsed")
+    user_text = st.text_area("Input", placeholder="Enter raw news text for neural analysis...", height=180, label_visibility="collapsed")  # ارتفاع 180
     
-    m_col, _ = st.columns([1.5, 1])
-    with m_col:
-        m_choice = st.selectbox("Intelligence Unit", list(engine.models.keys()) if engine_up else ["Status: Offline"])
+    selected_mdl = st.selectbox("Select Neural Core", list(brain.models.keys()) if loaded else ["Offline"])
     
-    exec_btn = st.button("EXECUTE ANALYSIS")
+    analyze_btn = st.button("INITIATE NEURAL SCAN")
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- Results ---
-    if exec_btn and user_text:
-        if engine_up:
-            with st.spinner("Decoding..."):
-                res = engine.predict_flow(user_text, m_choice)
+    # --- Result Execution (مع مسافات أقل) ---
+    if analyze_btn and user_text:
+        if loaded:
+            with st.spinner("Decoding semantics..."):
+                res = brain.predict(user_text, selected_mdl)
                 
-                st.markdown('<div class="glass-card" style="border-color: rgba(129, 140, 248, 0.2);">', unsafe_allow_html=True)
-                st.markdown(f'<p style="text-align:center; color:#475569; letter-spacing:6px; font-family:Space Grotesk; font-size:0.8rem;">OUTPUT_SIGNAL</p>', unsafe_allow_html=True)
-                st.markdown(f'<h2 style="font-family:Instrument Serif; font-size:7rem; font-style:italic; text-align:center; color:{SoftTheme.ACCENT_GLOW}; margin:15px 0;">{res["label"]}</h2>', unsafe_allow_html=True)
-                st.markdown(f'<p style="text-align:center; font-family:Space Grotesk; color:{SoftTheme.MAIN_SOFT}; font-size:1.3rem;">RELIABILITY: {res["conf"]*100:.2f}%</p>', unsafe_allow_html=True)
+                st.markdown('<div class="neon-card" style="border-color: #00d4ff44;">', unsafe_allow_html=True)
+                st.markdown(f'<p style="text-align:center; color:#555; letter-spacing:3px; font-family:Orbitron; font-size:0.7rem;">INFERENCE_RESULT</p>', unsafe_allow_html=True)
+                st.markdown(f'<h2 class="neon-result">{res["category"]}</h2>', unsafe_allow_html=True)
+                st.markdown(f'<p style="text-align:center; font-family:Orbitron; color:{NeonTheme.MAIN_GLOW}; font-size:1rem;">ACCURACY_LEVEL: {res["score"]*100:.2f}%</p>', unsafe_allow_html=True)
                 
-                st.markdown('<div style="margin-top:70px; padding-top:50px; border-top:1px solid rgba(255,255,255,0.03);">', unsafe_allow_html=True)
-                st.pyplot(SoftPlots.show_dist(res))
+                st.markdown('<div style="margin-top:30px; padding-top:20px; border-top:1px solid #111;">', unsafe_allow_html=True)
+                st.pyplot(NeonViz.plot_glow_bars(res))
                 st.markdown('</div>', unsafe_allow_html=True)
                 st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- Footer & Team (Fixed Rectangles) ---
+    # --- Footer & Team (مسافات أقل) ---
     st.markdown(f"""
-    <div style="margin-top:160px; padding:100px 0; border-top:1px solid rgba(255,255,255,0.02); text-align:center;">
-        <p style="letter-spacing:12px; color:#334155; font-size:0.85rem; margin-bottom:50px; font-family:Space Grotesk;">UNDER THE GUIDANCE OF YOUSSEF AL-BAROUDI</p>
-        
-        <div class="team-container">
-            {"".join([f'<div class="member-box">{name}</div>' for name in SoftTheme.TEAM])}
+    <div style="margin-top:60px; padding:50px 0; border-top:1px solid #111; text-align:center;">
+        <p style="letter-spacing:8px; color:#222; font-size:0.7rem; margin-bottom:30px; font-family:Orbitron;">UNDER THE GUIDANCE OF YOUSSEF AL-BAROUDI</p>
+        <div style="display:flex; justify-content:center; flex-wrap:wrap; gap:15px;">
+            {"".join([f'<div class="member-glow">{name}</div>' for name in NeonTheme.TEAM])}
         </div>
-        
-        <p style="margin-top:70px; font-family:Space Grotesk; font-size:0.7rem; color:#1e293b; letter-spacing:8px;">
-            COMPUTER SCIENCE • SECTION 1 • 2026
+        <p style="margin-top:30px; font-family:Orbitron; font-size:0.5rem; color:#111; letter-spacing:3px;">
+            SYSTEM STATUS: OPERATIONAL | BUILD: 2026.05
         </p>
     </div>
     """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
-    run_app()
+    main()
