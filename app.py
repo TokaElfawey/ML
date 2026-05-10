@@ -204,12 +204,13 @@ def main():
             """, unsafe_allow_html=True)
 
     # Footer المطور
-    st.markdown(f"""
-    <div class="footer">
-        <p style="color:#00f5ff; font-weight:bold; font-size:1.1rem;">Developed with ❤️ by Section 1 Team</p>
-        <p style="color:#64748b;">Toka Nasr | Aya Ahmed | Toka Alaa | Bavly Hany | Paula Moukhtar</p>
-        <p style="font-size:0.8rem; color:#475569; margin-top:10px;">© 2026 Academic Project | Intelligence Systems Lab</p>
-    </div>
+    st.markdown("<br><hr>", unsafe_allow_html=True)
+    st.markdown("""
+        <div style='text-align: center; color: #94a3b8; font-family: sans-serif; font-size: 14px;'>
+            Developed with ❤️ by <b style='color: #00f5ff;'>Section 1 Team</b><br>
+            <span style='font-size: 12px;'>Toka Nasr | Aya Ahmed | Toka Alaa | Bavly Hany | Paula Moukhtar</span><br>
+            © 2026 Academic Project
+        </div>
     """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
