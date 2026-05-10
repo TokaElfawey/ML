@@ -263,6 +263,8 @@ header { visibility: hidden; }
 
 # ── 3. Load Models ─────────────────────────────────────────────────────────────
 @st.cache_resource
+import os
+st.write("Files in directory:", os.listdir("."))
 def load_assets():
     try:
         tfidf  = joblib.load("tfidf_vectorizer.joblib")
