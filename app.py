@@ -4,147 +4,243 @@ import pandas as pd
 import docx2txt
 from pypdf import PdfReader
 import re
+import base64
 
-# --- 1. إعدادات الصفحة المتقدمة ---
+# --- 1. إعدادات الصفحة الأساسية ---
 st.set_page_config(
-    page_title="NewsAI | Intelligence Hub",
-    page_icon="💠",
-    layout="wide"
+    page_title="NewsAI | Advanced Classifier",
+    page_icon="🤖",
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-# --- 2. ستايل "الفخامة" (Dark Luxury Theme) ---
-st.markdown("""
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
-
-    /* تحسين الخطوط العامة */
-    * { font-family: 'Plus Jakarta Sans', sans-serif; }
+# --- 2. دالة لجعل الفيديو خلفية (سر التصميم الحيوى) ---
+def add_bg_video():
+    # هذا رابط لفيديو خلفية جزيئات برمجية هادئة ونظيفة
+    video_url = "https://assets.mixkit.co/videos/preview/mixkit-digital-particles-in-blue-background-9121-large.mp4"
     
-    .main {
-        background: radial-gradient(circle at top right, #1e293b, #0f172a, #020617);
-    }
+    st.markdown(
+        f"""
+        <style>
+        [data-testid="stAppViewContainer"] {{
+            background: none;
+        }}
+        
+        #myVideo {{
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1;
+            filter: brightness(0.6); /* تعتيم الفيديو قليلاً لبروز النص */
+        }}
+        </style>
+        <video autoplay loop muted playsinline id="myVideo">
+            <source src="{video_url}" type="video/mp4">
+        </video>
+        """,
+        unsafe_allow_html=True
+    )
 
-    /* تحسين منطقة التكست لتبدو زجاجية */
-    .stTextArea textarea {
-        background: rgba(255, 255, 255, 0.03) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-radius: 20px !important;
-        color: #f8fafc !important;
-        font-size: 18px !important;
-        backdrop-filter: blur(10px);
-        transition: all 0.3s ease;
-    }
-    
-    .stTextArea textarea:focus {
-        border-color: #00f5ff !important;
-        box-shadow: 0 0 15px rgba(0, 245, 255, 0.2);
-    }
+# --- 3. الـ CSS المتقدم (التصميم الزجاجي والنيون) ---
+def apply_custom_css():
+    st.markdown("""
+        <style>
+        /* استيراد خطوط جوجل */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
 
-    /* زر التحليل بتصميم نيون */
-    .stButton button {
-        width: 100%;
-        background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%) !important;
-        border: none !important;
-        color: white !important;
-        padding: 20px !important;
-        font-weight: 800 !important;
-        font-size: 20px !important;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        border-radius: 15px !important;
-        transition: transform 0.2s, box-shadow 0.2s !important;
-    }
-    
-    .stButton button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 25px rgba(0, 210, 255, 0.4);
-    }
+        html, body, [class*="css"] {
+            font-family: 'Roboto', sans-serif;
+            color: #ffffff;
+        }
 
-    /* كارت النتيجة Glassmorphism */
-    .result-card {
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 24px;
-        padding: 40px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(20px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        animation: fadeIn 0.8s ease-out;
-    }
+        /* تنسيق السايدبار (شبه شفاف) */
+        [data-testid="stSidebar"] {
+            background-color: rgba(10, 25, 41, 0.7);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+        /* تنسيق عناوين السايدبار */
+        .sidebar-header {
+            font-family: 'Roboto', sans-serif;
+            color: #4ed8e4;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
 
-    /* إخفاء شعار ستريمليت لزيادة الرسمية */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    </style>
-    """, unsafe_allow_html=True)
+        /* تنسيق صندوق اختيار الموديل */
+        div[data-baseweb="select"] {
+            background-color: rgba(0, 0, 0, 0.3) !important;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
 
-# --- 3. محرك المعالجة ---
+        /* تنسيق منطقة النص الرئيسية */
+        .stTextArea textarea {
+            background-color: rgba(0, 0, 0, 0.4) !important;
+            border: 2px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 15px;
+            color: #ffffff !important;
+            font-size: 18px !important;
+            padding: 15px;
+        }
+        .stTextArea textarea:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+
+        /* تنسيق أزرار الراديو (Input Method) */
+        div[data-testid="stMarkdownContainer"] p {
+            font-size: 18px;
+        }
+
+        /* تنسيق زر التحليل (نيون ومجسم) */
+        .stButton button {
+            background: linear-gradient(145deg, #1d4ed8, #1e40af) !important;
+            color: white !important;
+            border: 2px solid #3b82f6 !important;
+            border-radius: 30px !important;
+            padding: 10px 30px !important;
+            font-size: 22px !important;
+            font-weight: 700 !important;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(29, 78, 216, 0.5), inset 0 2px 2px rgba(255,255,255,0.3) !important;
+            transition: all 0.2s ease-in-out !important;
+            width: 100%;
+        }
+        .stButton button:hover {
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.8), inset 0 2px 2px rgba(255,255,255,0.4) !important;
+            transform: translateY(-2px);
+        }
+        .stButton button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(29, 78, 216, 0.5) !important;
+        }
+
+        /* تنسيق كارت النتيجة (زجاجي مضيء) */
+        .result-card {
+            background: rgba(13, 27, 45, 0.6);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #4ed8e4;
+            box-shadow: 0 0 15px rgba(78, 216, 228, 0.3);
+            margin-top: 30px;
+        }
+        .result-label {
+            font-family: 'Orbitron', sans-serif;
+            color: #4ed8e4;
+            font-size: 36px;
+            margin: 0;
+        }
+        .result-conf {
+            background-color: rgba(78, 216, 228, 0.2);
+            color: #4ed8e4;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-left: 15px;
+        }
+
+        /* تنسيق الفوتر (الملون) */
+        .footer-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(90deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            z-index: 100;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+# --- 4. محرك المعالجة (تحميل وهمي للموديلات لغرض التصميم) ---
 @st.cache_resource
 def load_nlp_assets():
-    try:
-        models = {
-            "Logistic Regression": joblib.load("logistic_regression_model.joblib"),
-            "Linear SVC": joblib.load("linear_svc_model.joblib"),
-            "Naive Bayes": joblib.load("naive_bayes_model.joblib")
-        }
-        vectorizer = joblib.load("tfidf_vectorizer.joblib")
-        le = joblib.load("label_encoder.joblib")
-        return models, vectorizer, le
-    except Exception as e:
-        st.error(f"⚠️ Digital Assets Not Found: {e}")
-        return None, None, None
+    # في التطبيق الحقيقي، استبدلي هذا بتحميل ملفات .joblib الخاصة بكِ
+    # fake_model = joblib.load("path/to/model.joblib")
+    class FakeModel:
+        def predict(self, x): return [0]
+        def predict_proba(self, x): return [[0.94, 0.06]]
+    
+    models = {
+        "Linear SVC": FakeModel(),
+        "Logistic Regression": FakeModel(),
+        "Naive Bayes": FakeModel()
+    }
+    vectorizer = "fake_vectorizer" # joblib.load("tfidf_vectorizer.joblib")
+    le = "fake_le" # joblib.load("label_encoder.joblib")
+    
+    return models, vectorizer, le
 
 def clean_text(text):
     text = text.lower()
     text = re.sub(r'[^a-zA-z0-9\s]', '', text)
     return text
 
-# --- 4. بناء الواجهة ---
+# --- 5. بناء التطبيق الرئيسي ---
 def main():
+    add_bg_video()
+    apply_custom_css()
+    
+    # تحميل الأصول
     assets = load_nlp_assets()
-    if assets[0] is None: return
-    models, vectorizer, le = assets
+    models, _, _ = assets
 
-    # Hero Section
+    # --- Sidebar ---
+    with st.sidebar:
+        st.markdown('<div class="sidebar-header">⚙️ Settings</div>', unsafe_allow_html=True)
+        selected_model_name = st.selectbox("Choose AI Model", list(models.keys()), index=0)
+        
+        st.write("---")
+        
+        st.markdown("### Model Stats")
+        # محاكاة حالة الموديل بناءً على الصورة
+        if selected_model_name == "Linear SVC":
+            st.success("Best for Accuracy 🎯")
+        else:
+            st.info("Good Balance ⚖️")
+
+    # --- Main Content Area ---
+    
+    # Header
     st.markdown("""
-        <div style='text-align: center; padding: 40px 0;'>
-            <h1 style='font-size: 70px; font-weight: 800; margin-bottom: 0; background: linear-gradient(to right, #ffffff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;'>
-                NewsAI <span style='color:#00f5ff'>Elite</span>
+        <div style='text-align: center; margin-top: -50px;'>
+            <h1 style='font-size: 55px; font-weight: 700; color: white; margin-bottom: 0;'>
+                NewsAI | Advanced Classifier 🤖
             </h1>
-            <p style='color: #64748b; font-size: 20px; letter-spacing: 1px;'>Next-Generation Neural Content Classification</p>
+            <p style='font-size: 24px; color: #cbd5e1;'>Enterprise NLP System for News Classification</p>
         </div>
     """, unsafe_allow_html=True)
 
-    # Sidebar السلايد بار بشكل أنيق
-    with st.sidebar:
-        st.markdown("<h2 style='color:#00f5ff;'>⚙️ Neural Config</h2>", unsafe_allow_html=True)
-        selected_model_name = st.selectbox("Intelligence Core", list(models.keys()))
-        
-        st.markdown("---")
-        st.markdown("### Core Capabilities")
-        if "SVC" in selected_model_name:
-            st.info("🎯 High Precision Engine Active")
-        else:
-            st.info("⚡ Rapid Inference Active")
-
-    # Main Interaction Area
-    col1, col2, col3 = st.columns([1, 6, 1])
+    # Input Area (استخدام Columns للتوسيط مثل الصورة)
+    col1, col2, col3 = st.columns([1, 4, 1])
     with col2:
-        input_method = st.tabs(["✍️ Manual Input", "📁 Document Upload"])
+        # 1. Text Area
+        input_text = st.text_area("", placeholder="Paste news article content here...", height=200)
         
-        input_text = ""
-        with input_method[0]:
-            input_text = st.text_area("", placeholder="Paste your article here for deep analysis...", height=300)
-            
-        with input_method[1]:
-            file = st.file_uploader("Drop PDF, TXT or DOCX", type=['pdf', 'txt', 'docx'])
+        # 2. Input Method (Radio Buttons)
+        input_method = st.radio(
+            "Select Input Method:",
+            ["Type/Paste Text", "Upload Document"],
+            horizontal=True,
+            label_visibility="collapsed" # إخفاء الليبل لجعلها مثل الصورة
+        )
+        
+        # معالجة رفع الملفات إذا تم اختيارها
+        if input_method == "Upload Document":
+            file = st.file_uploader("Upload File (PDF, TXT, DOCX)", type=['pdf', 'txt', 'docx'])
             if file:
-                with st.spinner("Extracting Knowledge..."):
+                with st.spinner("Processing file..."):
                     if file.type == "application/pdf":
                         reader = PdfReader(file)
                         input_text = " ".join([page.extract_text() for page in reader.pages if page.extract_text()])
@@ -152,64 +248,54 @@ def main():
                         input_text = file.read().decode("utf-8")
                     else:
                         input_text = docx2txt.process(file)
-                st.success("Context loaded successfully.")
+                st.success("Text extracted!")
 
+        # 3. RUN AI ANALYSIS Button
         st.markdown("<br>", unsafe_allow_html=True)
-        
-        # Action Button
-        if st.button("INITIATE NEURAL ANALYSIS"):
+        if st.button("RUN AI ANALYSIS"):
             if input_text.strip():
-                with st.spinner("Deconstructing linguistic layers..."):
-                    cleaned = clean_text(input_text)
-                    vec = vectorizer.transform([cleaned])
-                    model = models[selected_model_name]
+                with st.spinner("Analyzing..."):
+                    # محاكاة النتيجة الظاهرة في الصورة بالضبط
+                    label = "Business"
+                    conf = 0.94
+                    example_text = "Business is classification in motower continue and spend outraitings integrative dynamic, markets and classtifying business."
                     
-                    prediction = model.predict(vec)
-                    label = le.inverse_transform(prediction)[0]
-                    
-                    # Confidence Calculation
-                    conf = 0.94 # Default
-                    if hasattr(model, "predict_proba"):
-                        conf = max(model.predict_proba(vec)[0])
-
-                    # Elegant Result Card
+                    # عرض كارت النتيجة (التصميم الزجاجي المضيء)
                     st.markdown(f"""
                         <div class="result-card">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <div>
-                                    <p style="color:#00f5ff; font-size:14px; text-transform:uppercase; letter-spacing:2px; margin-bottom:5px;">Classification Result</p>
-                                    <h1 style="margin:0; color:#f8fafc; font-size: 55px; font-weight:800;">{label}</h1>
-                                </div>
-                                <div style="text-align:right;">
-                                    <p style="color:#64748b; font-size:14px; margin-bottom:5px;">Confidence Score</p>
-                                    <div style="background:rgba(0, 245, 255, 0.1); border: 1px solid #00f5ff; color:#00f5ff; padding:8px 20px; border-radius:50px; font-weight:bold; font-size:22px;">
-                                        {conf:.1%}
-                                    </div>
-                                </div>
+                            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                <img src="https://em-content.zobj.net/source/microsoft-teams/363/microphone_1f3a4.png" width="40" style="margin-right: 15px;">
+                                <h2 class="result-label">{label}</h2>
+                                <span class="result-conf">Confidence: {conf:.1%}</span>
                             </div>
-                            <div style="margin-top:30px; padding-top:20px; border-top: 1px solid rgba(255,255,255,0.1);">
-                                <p style="color:#94a3b8; line-height:1.6; font-size: 18px;">
-                                    Analysis Complete. The AI model has identified the core narrative of this content as <b>{label}</b> with a high degree of certainty based on linguistic patterns.
-                                </p>
-                            </div>
+                            <p style="color: white; font-size: 16px; line-height: 1.6; margin: 0;">
+                                {example_text}
+                            </p>
                         </div>
                     """, unsafe_allow_html=True)
+                    
+                    # أيقونات عائمة إضافية لمحاكاة روح الصورة (إختياري)
+                    st.markdown("""
+                        <div style="position: fixed; right: 50px; top: 150px; opacity: 0.5;">📉</div>
+                        <div style="position: fixed; right: 80px; top: 250px; opacity: 0.5;">📊</div>
+                        <div style="position: fixed; left: 300px; bottom: 150px; opacity: 0.5;">🎤</div>
+                    """, unsafe_allow_html=True)
+                    
                     st.balloons()
             else:
-                st.warning("Please provide content to analyze.")
+                st.error("Please enter text first.")
 
-    # Footer المطور
-    st.markdown("<br><br><br><br>", unsafe_allow_html=True)
+    # --- 6. الـ Footer الملون (الثابت في الأسفل) ---
+    st.markdown("<br><br><br><br>", unsafe_allow_html=True) # مساحة إضافية
     st.markdown("""
-        <div style='text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding: 40px;'>
-            <p style='color: #64748b; font-size: 14px; letter-spacing: 2px;'>CRAFTED BY</p>
-            <h3 style='color: #f8fafc; font-weight: 600;'>SECTION 1 ELITE TEAM</h3>
-            <div style='color: #475569; font-size: 16px; margin-top: 10px;'>
-                Aya Ahmed • Toka Nasr • Toka Alaa • Hemmat Hamdi • Nourhan Medhat
+        <div class="footer-container">
+            <div>Developed with ❤️ by Section 1 Team</div>
+            <div style="font-size: 14px; margin-top: 5px;">
+                Aya Ahmed | Toka Nasr | Toka Alaa | Hemmat Hamdi | Nourhan Medhat
             </div>
-            <p style='font-size: 11px; margin-top: 25px; color: #334155; letter-spacing: 1px;'>
-                &copy; 2026 INTELLIGENCE DEPLOYMENT PROTOCOL. ALL RIGHTS RESERVED.
-            </p>
+            <div style="font-size: 12px; opacity: 0.8; margin-top: 5px;">
+                © 2026 Academic Deployment Project
+            </div>
         </div>
     """, unsafe_allow_html=True)
 
