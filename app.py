@@ -207,7 +207,7 @@ def main():
     st.markdown("<br><hr>", unsafe_allow_html=True)
     st.markdown("""
         <div style='text-align: center; color: #94a3b8; font-family: sans-serif; font-size: 18px;'>
-            Developed with ❤️ by <b style='color: #00f5ff;'>Section 1 Team</b><br>
+            Developed with ❤️ by <b style='color: #00f5ff;'>
             <span style='font-size: 18px;'>Toka Nasr | Aya Ahmed | Toka Alaa | Hemmat Hamdi | Nourhan Medhat</span><br>
             © 2026 Academic Project
         </div>
