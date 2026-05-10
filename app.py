@@ -1,35 +1,82 @@
 import streamlit as st
 import joblib
-import os
 import pandas as pd
-from PIL import Image
 import docx2txt
 from pypdf import PdfReader
+import re
 
-# --- 1. إعدادات الصفحة (UI/UX Settings) ---
+# --- 1. إعدادات الصفحة والـ UI ---
 st.set_page_config(
-    page_title="AG News AI Classifier",
-    page_icon="📰",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    page_title="NewsAI | Advanced Classifier",
+    page_icon="🤖",
+    layout="wide"
 )
 
-# تصميم CSS مخصص لجعل الواجهة تبدو كـ SaaS احترافي
+# تحسين الخطوط وإضافة تصميم الـ Footer
 st.markdown("""
     <style>
-    .main { background-color: #0e1117; }
-    .stTextArea textarea { background-color: #161b22; color: white; border-radius: 10px; border: 1px solid #30363d; }
-    .stButton button { width: 100%; background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); color: black; font-weight: bold; border: none; border-radius: 10px; padding: 10px; }
-    .result-card { background-color: #1c2128; padding: 20px; border-radius: 15px; border-left: 5px solid #4facfe; margin-top: 20px; }
-    .confidence-bar { height: 10px; background-color: #30363d; border-radius: 5px; margin-top: 10px; }
-    .confidence-fill { height: 100%; background: linear-gradient(90deg, #00f2fe, #4facfe); border-radius: 5px; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+    
+    /* تكبير الخطوط العامة */
+    html, body, [class*="css"] { 
+        font-family: 'Inter', sans-serif; 
+        font-size: 18px; /* تكبير الخط الأساسي */
+    }
+    
+    .main { background-color: #0b0e14; }
+    
+    /* تكبير وتنسيق منطقة النص */
+    .stTextArea textarea { 
+        font-size: 20px !important; 
+        background-color: #161b22; 
+        color: #e6edf3; 
+        border-radius: 12px; 
+    }
+    
+    /* تنسيق زر التحليل */
+    .stButton button { 
+        background: linear-gradient(135deg, #007cf0 0%, #00dfd8 100%); 
+        color: white; 
+        font-size: 22px !important; 
+        height: 3.5em !important; 
+        font-weight: 700;
+        border-radius: 15px;
+    }
+    
+    /* كارت النتيجة */
+    .result-card { 
+        background: rgba(22, 27, 34, 0.8); 
+        padding: 30px; 
+        border-radius: 20px; 
+        border: 1px solid #30363d; 
+        margin-top: 25px; 
+    }
+    
+    /* تصميم الـ Footer الأسفل */
+    .footer {
+        position: relative;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        background-color: transparent;
+        color: #8b949e;
+        text-align: center;
+        padding: 50px 0 20px 0;
+        font-size: 16px;
+        border-top: 1px solid #30363d;
+        margin-top: 50px;
+    }
+    .team-names {
+        color: #58a6ff;
+        font-weight: bold;
+        font-size: 18px;
+    }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 2. وظائف مساعدة (Helpers) ---
+# --- 2. محرك المعالجة ---
 @st.cache_resource
-def load_assets():
-    """تحميل الموديلات والـ Vectorizer مرة واحدة وتخزينها في الذاكرة"""
+def load_nlp_assets():
     try:
         models = {
             "Logistic Regression": joblib.load("logistic_regression_model.joblib"),
@@ -37,98 +84,97 @@ def load_assets():
             "Naive Bayes": joblib.load("naive_bayes_model.joblib")
         }
         vectorizer = joblib.load("tfidf_vectorizer.joblib")
-        label_encoder = joblib.load("label_encoder.joblib")
-        return models, vectorizer, label_encoder
+        le = joblib.load("label_encoder.joblib")
+        return models, vectorizer, le
     except Exception as e:
-        st.error(f"Error loading models: {e}. تأكدي أن ملفات الموديلات في نفس المجلد.")
+        st.error(f"⚠️ Assets Missing: {e}")
         return None, None, None
 
-def extract_text_from_file(uploaded_file):
-    if uploaded_file.type == "text/plain":
-        return str(uploaded_file.read(), "utf-8")
-    elif uploaded_file.type == "application/pdf":
-        pdf_reader = PdfReader(uploaded_file)
-        text = ""
-        for page in pdf_reader.pages:
-            text += page.extract_text()
-        return text
-    elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-        return docx2txt.process(uploaded_file)
-    return ""
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r'[^a-zA-z0-9\s]', '', text)
+    return text
 
-# --- 3. بناء الواجهة (The Interface) ---
+# --- 3. بناء التطبيق ---
 def main():
-    models, vectorizer, label_encoder = load_assets()
+    models, vectorizer, le = load_nlp_assets()
     
-    # Sidebar: Model Selection & Info
+    # Header
+    st.markdown("<h1 style='text-align: center; font-size: 50px;'>NewsAI <span style='color:#58a6ff'>Predictor</span></h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: #8b949e; font-size: 20px;'>Advanced NLP System for Professional News Categorization</p>", unsafe_allow_html=True)
+    st.divider()
+
+    # Sidebar
     with st.sidebar:
-        st.image("https://cdn-icons-png.flaticon.com/512/2103/2103633.png", width=80)
-        st.title("Settings")
-        st.subheader("Model Configuration")
-        selected_model_name = st.selectbox("Choose AI Model", list(models.keys()))
-        
-        st.divider()
-        st.info("💡 **Accuracy Hint:** Linear SVC typically performs best for text classification.")
-        
-        if st.button("Clear History"):
-            st.session_state.history = []
+        st.header("⚙️ Configuration")
+        selected_model_name = st.selectbox("Select Intelligence Model", list(models.keys()))
+        st.write("---")
+        st.markdown("### Model Insights")
+        st.info(f"Currently using: **{selected_model_name}**")
 
-    # Main Content
-    st.markdown("<h1 style='text-align: center;'>📰 AG News Classifier AI</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; color: #8b949e;'>Advanced NLP System for News Categorization</p>", unsafe_allow_html=True)
-
-    # Tabs for different inputs
-    tab1, tab2 = st.tabs(["✍️ Manual Input", "📁 Upload Document"])
-
+    # Main Input Area
+    input_method = st.radio("Select Input Source:", ["Write or Paste Text", "Upload Document File"], horizontal=True)
+    
     input_text = ""
+    if input_method == "Write or Paste Text":
+        input_text = st.text_area("Article Content", placeholder="Enter the news article here...", height=300)
+    else:
+        file = st.file_uploader("Upload (PDF, TXT, DOCX)", type=['pdf', 'txt', 'docx'])
+        if file:
+            with st.spinner("Reading file..."):
+                if file.type == "application/pdf":
+                    reader = PdfReader(file)
+                    input_text = " ".join([page.extract_text() for page in reader.pages])
+                elif file.type == "text/plain":
+                    input_text = file.read().decode("utf-8")
+                else:
+                    input_text = docx2txt.process(file)
+            st.success("Content extracted successfully!")
 
-    with tab1:
-        input_text = st.text_area("Paste the news content here...", height=200, placeholder="Example: Apple launches new iPhone with AI features...")
-
-    with tab2:
-        uploaded_file = st.file_uploader("Choose a file (PDF, TXT, DOCX)", type=["pdf", "txt", "docx"])
-        if uploaded_file:
-            input_text = extract_text_from_file(uploaded_file)
-            st.success("File uploaded and text extracted successfully!")
-
-    # Analyze Button
-    if st.button("🚀 Analyze Content"):
-        if input_text.strip() == "":
-            st.warning("Please provide some text first.")
-        else:
-            with st.spinner("AI is analyzing the text..."):
-                # Inference Logic
+    # Analysis Action
+    if st.button("START AI ANALYSIS"):
+        if input_text.strip():
+            with st.spinner("🧠 Deep Analysis in progress..."):
+                cleaned = clean_text(input_text)
+                vec = vectorizer.transform([cleaned])
                 model = models[selected_model_name]
-                vec_text = vectorizer.transform([input_text])
-                prediction = model.predict(vec_text)
-                label = label_encoder.inverse_transform(prediction)[0]
                 
-                # Confidence Score (Estimation if not available)
-                confidence = 0.92
+                prediction = model.predict(vec)
+                label = le.inverse_transform(prediction)[0]
+                
+                # Confidence Calculation
+                conf = 0.95
                 if hasattr(model, "predict_proba"):
-                    probs = model.predict_proba(vec_text)
-                    confidence = float(max(probs[0]))
+                    conf = max(model.predict_proba(vec)[0])
 
-                # Display Results
+                # Display Result
                 st.markdown(f"""
-                <div class="result-card">
-                    <h3 style='margin:0;'>Result: <span style='color:#4facfe;'>{label}</span></h3>
-                    <p style='margin:5px 0 0 0; font-size:0.9rem; color:#8b949e;'>Model: {selected_model_name}</p>
-                    <div style='margin-top:15px;'>
-                        <span>Confidence Level: {int(confidence*100)}%</span>
-                        <div class="confidence-bar">
-                            <div class="confidence-fill" style="width: {int(confidence*100)}%;"></div>
+                    <div class="result-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <h1 style="margin:0; color:#58a6ff; font-size: 40px;">{label}</h1>
+                            <span style="background:#238636; color:white; padding:8px 20px; border-radius:30px; font-weight:bold;">
+                                Confidence: {conf:.1%}
+                            </span>
                         </div>
+                        <p style="color:#8b949e; margin-top:20px; font-size: 20px;">
+                            The AI model has analyzed the linguistic patterns and classified this news under <b>{label}</b>.
+                        </p>
                     </div>
-                </div>
                 """, unsafe_allow_html=True)
-                
                 st.balloons()
+        else:
+            st.error("Please enter some text to analyze.")
 
-    # Footer
-    st.markdown("<br><hr><center><small>Powered by NLP Pipelines | Section 1 Team</small></center>", unsafe_allow_html=True)
+    # --- FOOTER Section ---
+    st.markdown(f"""
+        <div class="footer">
+            <p>Developed with ❤️ by Section 1 Team</p>
+            <div class="team-names">
+                آية احمد • تقي نصر • تقي علاء • همت حمدي • نورهان مدحت
+            </div>
+            <p style="font-size: 12px; margin-top: 10px;">© 2026 AI Deployment Project</p>
+        </div>
+    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
-    if 'history' not in st.session_state:
-        st.session_state.history = []
     main()
